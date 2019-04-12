@@ -1,0 +1,106 @@
+apply plugin: "jacoco"
+
+dependencies {
+    compile project(':tiny-rpc-core')
+    compile group: 'com.caucho', name: 'hessian', version: '4.0.60'
+
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.mockito:mockito-core:2.21.0'
+}
+
+
+repositories {
+    jcenter()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}
+
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestRuntime.extendsFrom testRuntime
+}
+
+afterEvaluate {
+    idea {
+        module {
+            testSourceDirs = testSourceDirs + sourceSets.integrationTest.allSource.srcDirs.flatten() as LinkedHashSet
+            outputDir = new File("${buildDir}/classes/idea/main")
+            testOutputDir = new File("${buildDir}/classes/idea/test")
+        }
+    }
+}
+
+sourceSets {
+    test {
+        java {
+            srcDir 'src/test/unit/java'
+        }
+        resources {
+            srcDir 'src/test/unit/resources'
+        }
+    }
+
+    integrationTest {
+        java {
+            srcDir 'src/test/intg/java'
+        }
+        resources {
+            srcDir 'src/test/intg/resources'
+        }
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+    }
+}
+
+
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+jacocoTestReport {
+    sourceSets sourceSets.main
+    executionData test, integrationTest
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    excludes: ['com/ndrlslz/model']
+            )
+        })
+    }
+}
+
+jacocoTestCoverageVerification {
+    sourceSets sourceSets.main
+    executionData test, integrationTest
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it,
+                    excludes: ['com/ndrlslz/model']
+            )
+        })
+    }
+
+    violationRules {
+        rule {
+            limit {
+                counter = 'BRANCH'
+                minimum = 0.00
+            }
+
+            limit {
+                counter = 'LINE'
+                minimum = 0.00
+            }
+        }
+    }
+}
+
+check.dependsOn jacocoTestCoverageVerification
+jacocoTestCoverageVerification.dependsOn jacocoTestReport
+
+check.dependsOn integrationTest

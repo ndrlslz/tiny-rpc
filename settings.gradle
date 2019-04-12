@@ -1,0 +1,5 @@
+rootProject.name = 'tiny-rpc'
+
+include 'tiny-rpc-core'
+include 'tiny-rpc-client'
+include 'tiny-rpc-server'
