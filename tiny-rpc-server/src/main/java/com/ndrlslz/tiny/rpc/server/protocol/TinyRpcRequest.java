@@ -3,28 +3,28 @@ package com.ndrlslz.tiny.rpc.server.protocol;
 import java.io.Serializable;
 
 public class TinyRpcRequest implements Serializable {
+    private String correlationId;
     private String methodName;
-    private int argumentsCount;
     private Object[] argumentsValue;
+
+    public String getCorrelationId() {
+        return correlationId;
+    }
 
     public String getMethodName() {
         return methodName;
-    }
-
-    public int getArgumentsCount() {
-        return argumentsCount;
     }
 
     public Object[] getArgumentsValue() {
         return argumentsValue;
     }
 
-    public void setMethodName(String methodName) {
-        this.methodName = methodName;
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
     }
 
-    public void setArgumentsCount(int argumentsCount) {
-        this.argumentsCount = argumentsCount;
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     public void setArgumentsValue(Object[] argumentsValue) {

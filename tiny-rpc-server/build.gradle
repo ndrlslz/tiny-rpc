@@ -2,8 +2,8 @@ apply plugin: "jacoco"
 
 dependencies {
     compile project(':tiny-rpc-core')
-    compile group: 'com.caucho', name: 'hessian', version: '4.0.60'
-
+    compile('com.caucho:hessian:4.0.60')
+    compile('org.apache.commons:commons-lang3:3.9')
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.21.0'
 }
