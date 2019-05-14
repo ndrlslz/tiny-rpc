@@ -1,6 +1,8 @@
 package com.ndrlslz.tiny.rpc.server.client;
 
-import java.io.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 
 public class RpcTestClient {
@@ -54,46 +56,8 @@ public class RpcTestClient {
         return null;
     }
 
-    int fromByteArray(byte[] bytes) {
+    private int fromByteArray(byte[] bytes) {
         return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | (bytes[3] & 0xFF);
-    }
-
-    public void send(String message) {
-        DataOutputStream outToServer = null;
-
-        try {
-            outToServer = new DataOutputStream(clientSocket.getOutputStream());
-            outToServer.writeBytes(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (outToServer != null) {
-                    outToServer.flush();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public String receive() {
-        try {
-            byte[] buffer = new byte[1024];
-
-            InputStream inputStream = clientSocket.getInputStream();
-
-            OutputStream outputStream = new ByteArrayOutputStream();
-
-            int count = inputStream.read(buffer);
-            outputStream.write(buffer, 0, count);
-
-            return outputStream.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;
     }
 
     public void close() {

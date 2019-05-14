@@ -8,7 +8,6 @@ import io.netty.handler.codec.MessageToMessageCodec;
 
 import java.util.List;
 
-//@Sharable
 public class TinyRpcRequestCodec extends MessageToMessageCodec<RpcMessage<TinyRpcRequest>, TinyRpcRequest> {
     @Override
     protected void encode(ChannelHandlerContext ctx, TinyRpcRequest msg, List<Object> out) {

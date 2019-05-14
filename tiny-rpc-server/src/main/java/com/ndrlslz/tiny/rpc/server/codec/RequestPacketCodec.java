@@ -10,7 +10,6 @@ import io.netty.handler.codec.ByteToMessageCodec;
 
 import java.util.List;
 
-//@Sharable
 public class RequestPacketCodec extends ByteToMessageCodec<RpcMessage<TinyRpcRequest>> {
     static final int BODY_LENGTH_SIZE = 4;
     private HessianSerializer serializer = new HessianSerializer();

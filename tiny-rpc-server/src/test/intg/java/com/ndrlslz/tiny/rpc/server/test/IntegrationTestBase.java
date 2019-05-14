@@ -1,7 +1,7 @@
 package com.ndrlslz.tiny.rpc.server.test;
 
+import com.ndrlslz.tiny.rpc.server.HelloServiceImpl;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
-import com.ndrlslz.tiny.rpc.server.service.HelloServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 
