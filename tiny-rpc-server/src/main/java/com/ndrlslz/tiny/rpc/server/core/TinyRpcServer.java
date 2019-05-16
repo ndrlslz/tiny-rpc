@@ -40,7 +40,7 @@ public class TinyRpcServer {
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new TinyRpcServerInitializer(requestHandlerGroup));
+                    .childHandler(new TinyRpcServerInitializer(requestHandlerGroup, serviceImpl));
 
             bootstrap.bind(port).sync();
 

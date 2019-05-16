@@ -1,11 +1,8 @@
 package com.ndrlslz.tiny.rpc.server.core;
 
-import com.ndrlslz.tiny.rpc.server.HelloServiceImpl;
-import com.ndrlslz.tiny.rpc.server.Input;
 import com.ndrlslz.tiny.rpc.server.exception.TinyRpcServerException;
 import com.ndrlslz.tiny.rpc.server.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.server.protocol.TinyRpcResponse;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -18,31 +15,22 @@ import java.lang.reflect.InvocationTargetException;
 
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 
-@Sharable
 public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcRequest> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcServerHandler.class);
+    private String correlationId;
+    private Object serviceImpl;
+
+    TinyRpcServerHandler(Object serviceImpl) {
+        this.serviceImpl = serviceImpl;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TinyRpcRequest msg) {
-        System.out.println(msg.getCorrelationId());
-        System.out.println(msg.getMethodName());
-
-        for (Object argumentValue : msg.getArgumentsValue()) {
-            System.out.println(argumentValue);
-        }
-
-        if (msg.getArgumentsValue().length > 0) {
-            Object o = msg.getArgumentsValue()[0];
-
-            System.out.println(o.getClass().getName());
-            System.out.println(o instanceof Input);
-        }
-
-        HelloServiceImpl helloService = new HelloServiceImpl();
+        correlationId = msg.getCorrelationId();
 
         Object response;
         try {
-            response = MethodUtils.invokeMethod(helloService, msg.getMethodName(), msg.getArgumentsValue());
+            response = MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
         } catch (NoSuchMethodException | IllegalAccessException exception) {
             LOGGER.error(exception.getMessage(), exception);
 
@@ -67,6 +55,7 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
 
         TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
         tinyRpcResponse.setResponseValue(new TinyRpcServerException(cause.getMessage(), cause));
+        tinyRpcResponse.setCorrelationId(correlationId);
 
         ctx.writeAndFlush(tinyRpcResponse).addListener(CLOSE);
     }

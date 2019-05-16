@@ -43,6 +43,11 @@ public class RpcIntegrationTest extends IntegrationTestBase {
 
         assertThat(response, instanceOf(String.class));
         assertThat(String.valueOf(response), is("hello world"));
+
+        Object response1 = callRemoteMethod("hello");
+
+        assertThat(response1, instanceOf(String.class));
+        assertThat(String.valueOf(response1), is("hello world"));
     }
 
     @Test
