@@ -1,6 +1,8 @@
 package com.ndrlslz.tiny.rpc.server;
 
-public interface HelloService {
+import java.util.List;
+
+public interface HelloService<T> {
     String hello();
 
     String say(String name);
@@ -8,4 +10,6 @@ public interface HelloService {
     String exception(String name);
 
     Output handle(Input input);
+
+    List<String> handle(List<T> list);
 }

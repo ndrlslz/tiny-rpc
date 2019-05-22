@@ -2,15 +2,10 @@ package com.ndrlslz.tiny.rpc.server.protocol;
 
 import java.io.Serializable;
 
-public class TinyRpcResponse implements Serializable {
-    private String correlationId;
+public class TinyRpcResponse extends TinyRpcMessage implements Serializable {
     private String methodName;
     private Class responseType;
     private Object responseValue;
-
-    public String getCorrelationId() {
-        return correlationId;
-    }
 
     public String getMethodName() {
         return methodName;
@@ -22,10 +17,6 @@ public class TinyRpcResponse implements Serializable {
 
     public Object getResponseValue() {
         return responseValue;
-    }
-
-    public void setCorrelationId(String correlationId) {
-        this.correlationId = correlationId;
     }
 
     public void setMethodName(String methodName) {

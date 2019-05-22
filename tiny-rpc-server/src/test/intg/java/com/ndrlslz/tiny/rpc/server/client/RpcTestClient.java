@@ -22,6 +22,8 @@ public class RpcTestClient {
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
+            outToServer.writeShort(0xbabe);
+            outToServer.writeByte(0x01);
             outToServer.writeInt(bytes.length);
             outToServer.write(bytes);
 
@@ -41,14 +43,28 @@ public class RpcTestClient {
     public byte[] receiveRpcResponse() {
         try {
             InputStream inputStream = clientSocket.getInputStream();
+
+            byte[] magic = new byte[2];
             byte[] bodyLength = new byte[4];
+            byte[] type = new byte[1];
+
+            inputStream.read(magic);
+            inputStream.read(type);
             inputStream.read(bodyLength);
 
-            int length = fromByteArray(bodyLength);
-            byte[] buffer = new byte[length];
-            inputStream.read(buffer);
+            if (magic[0] != (byte) 0xba && magic[1] != (byte) 0xbe) {
+                throw new RuntimeException("magic number not correct");
+            }
 
-            return buffer;
+            if (type[0] != (byte) 0x02) {
+                throw new RuntimeException("expect response, but not a response");
+            }
+
+            int length = fromByteArray(bodyLength);
+            byte[] response = new byte[length];
+            inputStream.read(response);
+
+            return response;
         } catch (IOException e) {
             e.printStackTrace();
         }

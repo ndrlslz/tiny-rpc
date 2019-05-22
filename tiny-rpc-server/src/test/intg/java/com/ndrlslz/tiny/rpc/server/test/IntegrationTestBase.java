@@ -13,7 +13,7 @@ public class IntegrationTestBase {
     @Before
     public void setUp() {
         tinyRpcServer = TinyRpcServer.create()
-                .registerService(new HelloServiceImpl())
+                .registerService(new HelloServiceImpl<String>())
                 .listen(6666);
     }
 

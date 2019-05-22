@@ -1,9 +1,9 @@
 package com.ndrlslz.tiny.rpc.server.core;
 
-import com.ndrlslz.tiny.rpc.server.codec.RequestPacketCodec;
-import com.ndrlslz.tiny.rpc.server.codec.ResponsePacketCodec;
-import com.ndrlslz.tiny.rpc.server.codec.TinyRpcRequestCodec;
-import com.ndrlslz.tiny.rpc.server.codec.TinyRpcResponseCodec;
+import com.ndrlslz.tiny.rpc.server.codec.ProtocolDecoder;
+import com.ndrlslz.tiny.rpc.server.codec.ProtocolEncoder;
+import com.ndrlslz.tiny.rpc.server.codec.RpcRequestDecoder;
+import com.ndrlslz.tiny.rpc.server.codec.RpcResponseEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -25,10 +25,10 @@ public class TinyRpcServerInitializer extends ChannelInitializer {
     protected void initChannel(Channel ch) {
         ch.pipeline()
                 .addLast(new IdleStateHandler(HEARTBEAT_TIMEOUT_SECONDS, 0, 0))
-                .addLast(new RequestPacketCodec())
-                .addLast(new ResponsePacketCodec())
-                .addLast(new TinyRpcRequestCodec())
-                .addLast(new TinyRpcResponseCodec());
+                .addLast(new ProtocolDecoder())
+                .addLast(new ProtocolEncoder())
+                .addLast(new RpcRequestDecoder())
+                .addLast(new RpcResponseEncoder());
 
         if (nonNull(requestHandlerGroup)) {
             ch.pipeline().addLast(requestHandlerGroup, new TinyRpcServerHandler(serviceImpl));

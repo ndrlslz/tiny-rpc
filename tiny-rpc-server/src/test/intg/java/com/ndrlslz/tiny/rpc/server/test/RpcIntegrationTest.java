@@ -12,10 +12,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
 public class RpcIntegrationTest extends IntegrationTestBase {
@@ -43,11 +44,6 @@ public class RpcIntegrationTest extends IntegrationTestBase {
 
         assertThat(response, instanceOf(String.class));
         assertThat(String.valueOf(response), is("hello world"));
-
-        Object response1 = callRemoteMethod("hello");
-
-        assertThat(response1, instanceOf(String.class));
-        assertThat(String.valueOf(response1), is("hello world"));
     }
 
     @Test
@@ -72,6 +68,22 @@ public class RpcIntegrationTest extends IntegrationTestBase {
 
         assertThat(response, instanceOf(Output.class));
         assertThat(((Output) response).getMessage(), is("Tom_chengdu_22"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void should_call_method_with_paradigm() {
+        ArrayList<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        list.add("3");
+
+        Object response = callRemoteMethod("handle", list);
+        assertThat(response, instanceOf(List.class));
+
+        List<String> result = (List<String>) response;
+        assertThat(result.size(), is(3));
+        assertThat(result, hasItems("1@", "2@", "3@"));
     }
 
     @Test
@@ -101,6 +113,6 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     }
 
     private TinyRpcResponse generateResponse(byte[] response) {
-        return (TinyRpcResponse) HESSIAN_SERIALIZER.deserialize(response);
+        return HESSIAN_SERIALIZER.deserialize(response, TinyRpcResponse.class);
     }
 }

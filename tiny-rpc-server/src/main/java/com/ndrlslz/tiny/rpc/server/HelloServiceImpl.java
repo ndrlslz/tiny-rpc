@@ -1,6 +1,9 @@
 package com.ndrlslz.tiny.rpc.server;
 
-public class HelloServiceImpl implements HelloService {
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class HelloServiceImpl<T> implements HelloService<T> {
 
     @Override
     public String hello() {
@@ -26,5 +29,13 @@ public class HelloServiceImpl implements HelloService {
         output.setMessage(message);
 
         return output;
+    }
+
+    @Override
+    public List<String> handle(List<T> list) {
+
+        return list.stream()
+                .map(t -> t.toString() + "@")
+                .collect(Collectors.toList());
     }
 }

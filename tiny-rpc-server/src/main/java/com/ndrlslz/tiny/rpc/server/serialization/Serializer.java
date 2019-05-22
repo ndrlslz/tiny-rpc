@@ -1,7 +1,7 @@
 package com.ndrlslz.tiny.rpc.server.serialization;
 
 public interface Serializer {
-    byte[] serialize(Object object);
+    <T> byte[] serialize(T object);
 
-    Object deserialize(byte[] bytes);
+    <T> T deserialize(byte[] bytes, Class<T> clazz);
 }
