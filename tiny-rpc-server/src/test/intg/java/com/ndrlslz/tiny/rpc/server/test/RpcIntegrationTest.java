@@ -87,6 +87,14 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    public void should_get_magic_number_not_correct_exception() {
+        Object responseValue = callRemoteMethodWithWrongMagicNumber("hello");
+
+        assertThat(responseValue, instanceOf(TinyRpcServerException.class));
+        assertThat(((TinyRpcServerException) responseValue).getMessage(), is("Magic number is not correct"));
+    }
+
+    @Test
     public void should_get_exception_response() {
         Object responseValue = callRemoteMethod("exception", "Tom");
 
@@ -98,6 +106,15 @@ public class RpcIntegrationTest extends IntegrationTestBase {
         byte[] bytes = generateRequest(methodName, arguments);
 
         rpcClient.sendRpcRequest(bytes);
+        byte[] bytesResponse = rpcClient.receiveRpcResponse();
+
+        return generateResponse(bytesResponse).getResponseValue();
+    }
+
+    private Object callRemoteMethodWithWrongMagicNumber(String methodName, Object... arguments) {
+        byte[] bytes = generateRequest(methodName, arguments);
+
+        rpcClient.sendRpcRequestWithWrongMagicNumber(bytes);
         byte[] bytesResponse = rpcClient.receiveRpcResponse();
 
         return generateResponse(bytesResponse).getResponseValue();

@@ -40,6 +40,31 @@ public class RpcTestClient {
         }
     }
 
+    public void sendRpcRequestWithWrongMagicNumber(byte[] bytes) {
+        DataOutputStream outToServer = null;
+
+        try {
+            outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
+            outToServer.writeShort(0xbabb);
+            outToServer.writeByte(0x01);
+            outToServer.writeInt(bytes.length);
+            outToServer.write(bytes);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outToServer != null) {
+                    outToServer.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
     public byte[] receiveRpcResponse() {
         try {
             InputStream inputStream = clientSocket.getInputStream();

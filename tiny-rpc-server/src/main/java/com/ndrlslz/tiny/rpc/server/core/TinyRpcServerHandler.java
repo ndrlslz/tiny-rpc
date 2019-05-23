@@ -54,7 +54,9 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
         LOGGER.error(cause.getMessage(), cause);
 
         TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
-        tinyRpcResponse.setResponseValue(new TinyRpcServerException(cause.getMessage(), cause));
+
+        Throwable causeReason = cause.getCause();
+        tinyRpcResponse.setResponseValue(new TinyRpcServerException(causeReason.getMessage(), causeReason));
         tinyRpcResponse.setCorrelationId(correlationId);
 
         ctx.writeAndFlush(tinyRpcResponse).addListener(CLOSE);
