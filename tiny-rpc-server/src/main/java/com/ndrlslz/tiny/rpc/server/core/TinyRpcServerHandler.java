@@ -28,19 +28,7 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
     protected void channelRead0(ChannelHandlerContext ctx, TinyRpcRequest msg) {
         correlationId = msg.getCorrelationId();
 
-        Object response;
-        try {
-            response = MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
-        } catch (NoSuchMethodException | IllegalAccessException exception) {
-            LOGGER.error(exception.getMessage(), exception);
-
-            response = new TinyRpcServerException(exception.getMessage(), exception);
-        } catch (InvocationTargetException exception) {
-            LOGGER.error(exception.getMessage(), exception);
-
-            Throwable targetException = exception.getTargetException();
-            response = new TinyRpcServerException(targetException.getMessage(), targetException);
-        }
+        Object response = invokeMethod(msg);
 
         TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
         tinyRpcResponse.setResponseValue(response);
@@ -67,7 +55,7 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                LOGGER.warn("close unactive session");
+                LOGGER.warn("close inactive session");
                 ctx.channel().close();
             }
         } else {
@@ -75,4 +63,21 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
         }
     }
 
+    private Object invokeMethod(TinyRpcRequest msg) {
+        Object response;
+        try {
+            response = MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
+        } catch (NoSuchMethodException | IllegalAccessException exception) {
+            LOGGER.error(exception.getMessage(), exception);
+
+            response = new TinyRpcServerException(exception.getMessage(), exception);
+        } catch (InvocationTargetException exception) {
+            LOGGER.error(exception.getMessage(), exception);
+
+            Throwable targetException = exception.getTargetException();
+            response = new TinyRpcServerException(targetException.getMessage(), targetException);
+        }
+
+        return response;
+    }
 }

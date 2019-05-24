@@ -7,13 +7,19 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static java.util.Objects.nonNull;
 
 public class TinyRpcServer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcServer.class);
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
     private Object serviceImpl;
-    //        private TinyRpcServerOptions TinyRpcServerOptions;
+    private TinyRpcServerOptions tinyRpcServerOptions;
     private static EventExecutorGroup requestHandlerGroup;
 
     private TinyRpcServer() {
@@ -24,6 +30,12 @@ public class TinyRpcServer {
         return new TinyRpcServer();
     }
 
+    public static TinyRpcServer create(TinyRpcServerOptions options) {
+        TinyRpcServer tinyRpcServer = create();
+        tinyRpcServer.tinyRpcServerOptions = options;
+        return tinyRpcServer;
+    }
+
     public TinyRpcServer registerService(Object serviceImpl) {
         this.serviceImpl = serviceImpl;
 
@@ -31,6 +43,10 @@ public class TinyRpcServer {
     }
 
     public TinyRpcServer listen(int port) {
+        if (nonNull(tinyRpcServerOptions) && nonNull(tinyRpcServerOptions.getWorkerThreadCount())) {
+            requestHandlerGroup = new DefaultEventExecutorGroup(tinyRpcServerOptions.getWorkerThreadCount());
+        }
+
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
 
@@ -43,9 +59,10 @@ public class TinyRpcServer {
                     .childHandler(new TinyRpcServerInitializer(requestHandlerGroup, serviceImpl));
 
             bootstrap.bind(port).sync();
-
         } catch (InterruptedException e) {
+            LOGGER.error(e.getMessage(), e);
         }
+
         return this;
     }
 

@@ -5,6 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
+import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.MAGIC_NUMBER;
+import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.REQUEST;
+
 public class RpcTestClient {
     private Socket clientSocket;
 
@@ -16,14 +19,37 @@ public class RpcTestClient {
         }
     }
 
-    public void sendRpcRequest(byte[] bytes) {
+    public void sendHeartBeat() {
         DataOutputStream outToServer = null;
 
         try {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
             outToServer.writeShort(0xbabe);
-            outToServer.writeByte(0x01);
+            outToServer.writeByte(0x03);
+            outToServer.writeInt(0);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (outToServer != null) {
+                    outToServer.flush();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void sendRpcRequest(byte[] bytes) {
+        DataOutputStream outToServer = null;
+
+        try {
+            outToServer = new DataOutputStream(clientSocket.getOutputStream());
+
+            outToServer.writeShort(MAGIC_NUMBER);
+            outToServer.writeByte(REQUEST);
             outToServer.writeInt(bytes.length);
             outToServer.write(bytes);
 
@@ -47,7 +73,7 @@ public class RpcTestClient {
             outToServer = new DataOutputStream(clientSocket.getOutputStream());
 
             outToServer.writeShort(0xbabb);
-            outToServer.writeByte(0x01);
+            outToServer.writeByte(REQUEST);
             outToServer.writeInt(bytes.length);
             outToServer.write(bytes);
 

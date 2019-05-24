@@ -95,11 +95,26 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
-    public void should_get_exception_response() {
+    public void should_get_exception_response_when_method_throw_exception() {
         Object responseValue = callRemoteMethod("exception", "Tom");
 
         assertThat(responseValue, instanceOf(TinyRpcServerException.class));
         assertThat(((TinyRpcServerException) responseValue).getMessage(), is("Exception happened"));
+    }
+
+    @Test
+    public void should_get_exception_response_when_method_not_match() {
+        Object responseValue = callRemoteMethod("say");
+
+        assertThat(responseValue, instanceOf(TinyRpcServerException.class));
+        assertThat(((TinyRpcServerException) responseValue).getMessage(), containsString("No such accessible method: say()"));
+    }
+
+    @Test
+    public void should_send_heartbeat() {
+        sendHeartbeat();
+        sendHeartbeat();
+        sendHeartbeat();
     }
 
     private Object callRemoteMethod(String methodName, Object... arguments) {
@@ -112,12 +127,17 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     }
 
     private Object callRemoteMethodWithWrongMagicNumber(String methodName, Object... arguments) {
+
         byte[] bytes = generateRequest(methodName, arguments);
 
         rpcClient.sendRpcRequestWithWrongMagicNumber(bytes);
         byte[] bytesResponse = rpcClient.receiveRpcResponse();
 
         return generateResponse(bytesResponse).getResponseValue();
+    }
+
+    private void sendHeartbeat() {
+        rpcClient.sendHeartBeat();
     }
 
     private byte[] generateRequest(String methodName, Object[] arguments) {

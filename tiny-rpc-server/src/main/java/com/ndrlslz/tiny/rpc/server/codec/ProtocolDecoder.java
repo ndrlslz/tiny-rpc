@@ -41,11 +41,11 @@ public class ProtocolDecoder extends ReplayingDecoder<State> {
                 protocolBody.setBody(bytes);
                 protocolBody.setType(header.getType());
                 out.add(protocolBody);
-                break;
             default:
                 checkpoint(MAGIC);
         }
     }
+
 
     private void checkMagicNumber(short magicNumber) {
         if (magicNumber != MAGIC_NUMBER) {
