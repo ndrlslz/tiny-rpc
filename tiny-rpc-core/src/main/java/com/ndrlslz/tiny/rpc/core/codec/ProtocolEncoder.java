@@ -1,11 +1,11 @@
-package com.ndrlslz.tiny.rpc.server.codec;
+package com.ndrlslz.tiny.rpc.core.codec;
 
-import com.ndrlslz.tiny.rpc.server.protocol.ProtocolBody;
+import com.ndrlslz.tiny.rpc.core.protocol.ProtocolBody;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.MAGIC_NUMBER;
+import static com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader.MAGIC_NUMBER;
 
 public class ProtocolEncoder extends MessageToByteEncoder<ProtocolBody> {
     @Override

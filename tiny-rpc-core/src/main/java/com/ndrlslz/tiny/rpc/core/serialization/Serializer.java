@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.server.serialization;
+package com.ndrlslz.tiny.rpc.core.serialization;
 
 public interface Serializer {
     <T> byte[] serialize(T object);

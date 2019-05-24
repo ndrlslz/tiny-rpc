@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.server.codec;
+package com.ndrlslz.tiny.rpc.core.codec;
 
 public enum State {
     MAGIC,

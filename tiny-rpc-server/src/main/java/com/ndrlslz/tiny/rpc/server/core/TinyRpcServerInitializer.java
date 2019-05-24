@@ -1,7 +1,7 @@
 package com.ndrlslz.tiny.rpc.server.core;
 
-import com.ndrlslz.tiny.rpc.server.codec.ProtocolDecoder;
-import com.ndrlslz.tiny.rpc.server.codec.ProtocolEncoder;
+import com.ndrlslz.tiny.rpc.core.codec.ProtocolDecoder;
+import com.ndrlslz.tiny.rpc.core.codec.ProtocolEncoder;
 import com.ndrlslz.tiny.rpc.server.codec.RpcRequestDecoder;
 import com.ndrlslz.tiny.rpc.server.codec.RpcResponseEncoder;
 import io.netty.channel.Channel;

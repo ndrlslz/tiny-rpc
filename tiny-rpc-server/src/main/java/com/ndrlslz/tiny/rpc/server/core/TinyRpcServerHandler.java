@@ -1,8 +1,8 @@
 package com.ndrlslz.tiny.rpc.server.core;
 
 import com.ndrlslz.tiny.rpc.server.exception.TinyRpcServerException;
-import com.ndrlslz.tiny.rpc.server.protocol.TinyRpcRequest;
-import com.ndrlslz.tiny.rpc.server.protocol.TinyRpcResponse;
+import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
+import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;

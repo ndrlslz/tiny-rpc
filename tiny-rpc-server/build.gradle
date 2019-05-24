@@ -2,8 +2,7 @@ apply plugin: "jacoco"
 
 dependencies {
     compile project(':tiny-rpc-core')
-    compile('com.caucho:hessian:4.0.60')
-    compile('org.apache.commons:commons-lang3:3.9')
+
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.21.0'
 }
@@ -67,7 +66,7 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    excludes: ['com/ndrlslz/model']
+                    excludes: ['com/ndrlslz/tiny/rpc/server/exception']
             )
         })
     }
@@ -80,7 +79,7 @@ jacocoTestCoverageVerification {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    excludes: ['com/ndrlslz/model']
+                    excludes: ['com/ndrlslz/tiny/rpc/server/exception']
             )
         })
     }
@@ -89,12 +88,12 @@ jacocoTestCoverageVerification {
         rule {
             limit {
                 counter = 'BRANCH'
-                minimum = 0.00
+                minimum = 0.30
             }
 
             limit {
                 counter = 'LINE'
-                minimum = 0.00
+                minimum = 0.90
             }
         }
     }

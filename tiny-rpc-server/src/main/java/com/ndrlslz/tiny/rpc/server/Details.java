@@ -21,12 +21,4 @@ public class Details implements Serializable {
     public void setAge(int age) {
         this.age = age;
     }
-
-    @Override
-    public String toString() {
-        return "Details{" +
-                "address='" + address + '\'' +
-                ", age=" + age +
-                '}';
-    }
 }

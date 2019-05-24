@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
 
-import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.MAGIC_NUMBER;
-import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.REQUEST;
+import static com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader.MAGIC_NUMBER;
+import static com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader.REQUEST;
 
 public class RpcTestClient {
     private Socket clientSocket;

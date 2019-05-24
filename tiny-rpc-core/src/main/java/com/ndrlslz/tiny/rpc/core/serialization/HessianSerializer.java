@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.server.serialization;
+package com.ndrlslz.tiny.rpc.core.serialization;
 
 import com.caucho.hessian.io.Hessian2Input;
 import com.caucho.hessian.io.Hessian2Output;

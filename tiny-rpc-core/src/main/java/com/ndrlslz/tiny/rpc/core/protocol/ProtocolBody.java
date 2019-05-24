@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.server.protocol;
+package com.ndrlslz.tiny.rpc.core.protocol;
 
 public class ProtocolBody {
     private byte type;

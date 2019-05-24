@@ -21,12 +21,4 @@ public class Input implements Serializable {
     public void setDetails(Details details) {
         this.details = details;
     }
-
-    @Override
-    public String toString() {
-        return "Input{" +
-                "name='" + name + '\'' +
-                ", details=" + details +
-                '}';
-    }
 }

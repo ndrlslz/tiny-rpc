@@ -1,16 +1,16 @@
-package com.ndrlslz.tiny.rpc.server.codec;
+package com.ndrlslz.tiny.rpc.core.codec;
 
-import com.ndrlslz.tiny.rpc.server.exception.MagicNumberNotCorrectException;
-import com.ndrlslz.tiny.rpc.server.protocol.ProtocolBody;
-import com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader;
+import com.ndrlslz.tiny.rpc.core.exception.MagicNumberNotCorrectException;
+import com.ndrlslz.tiny.rpc.core.protocol.ProtocolBody;
+import com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
 import java.util.List;
 
-import static com.ndrlslz.tiny.rpc.server.codec.State.MAGIC;
-import static com.ndrlslz.tiny.rpc.server.protocol.ProtocolHeader.MAGIC_NUMBER;
+import static com.ndrlslz.tiny.rpc.core.codec.State.*;
+import static com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader.MAGIC_NUMBER;
 
 public class ProtocolDecoder extends ReplayingDecoder<State> {
     private ProtocolHeader header = new ProtocolHeader();
@@ -24,13 +24,13 @@ public class ProtocolDecoder extends ReplayingDecoder<State> {
         switch (state()) {
             case MAGIC:
                 checkMagicNumber(in.readShort());
-                checkpoint(State.TYPE);
+                checkpoint(TYPE);
             case TYPE:
                 header.setType(in.readByte());
-                checkpoint(State.BODY_LENGTH);
+                checkpoint(BODY_LENGTH);
             case BODY_LENGTH:
                 header.setBodyLength(in.readInt());
-                checkpoint(State.BODY);
+                checkpoint(BODY);
             case BODY:
                 ByteBuf byteBuf = in.readBytes(header.getBodyLength());
 
