@@ -1,6 +1,7 @@
 package com.ndrlslz.tiny.rpc.core.protocol;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 public class TinyRpcRequest extends TinyRpcMessage implements Serializable {
     private String methodName;
@@ -20,5 +21,13 @@ public class TinyRpcRequest extends TinyRpcMessage implements Serializable {
 
     public void setArgumentsValue(Object[] argumentsValue) {
         this.argumentsValue = argumentsValue;
+    }
+
+    @Override
+    public String toString() {
+        return "TinyRpcRequest{" +
+                "methodName='" + methodName + '\'' +
+                ", argumentsValue=" + Arrays.toString(argumentsValue) +
+                '}';
     }
 }

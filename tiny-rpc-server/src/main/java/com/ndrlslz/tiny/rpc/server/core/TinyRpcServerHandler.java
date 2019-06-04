@@ -26,12 +26,15 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TinyRpcRequest msg) {
+        LOGGER.debug("TinyRpcServer receive message: " + msg.toString());
         correlationId = msg.getCorrelationId();
 
         Object response = invokeMethod(msg);
 
         TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
         tinyRpcResponse.setResponseValue(response);
+        tinyRpcResponse.setMethodName(msg.getMethodName());
+        tinyRpcResponse.setResponseType(response.getClass());
         tinyRpcResponse.setCorrelationId(msg.getCorrelationId());
 
         ctx.writeAndFlush(tinyRpcResponse);
