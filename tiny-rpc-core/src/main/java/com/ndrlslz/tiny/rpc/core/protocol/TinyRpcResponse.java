@@ -30,13 +30,4 @@ public class TinyRpcResponse extends TinyRpcMessage implements Serializable {
     public void setResponseValue(Object responseValue) {
         this.responseValue = responseValue;
     }
-
-    @Override
-    public String toString() {
-        return "TinyRpcResponse{" +
-                "methodName='" + methodName + '\'' +
-                ", responseType=" + responseType +
-                ", responseValue=" + responseValue +
-                '}';
-    }
 }

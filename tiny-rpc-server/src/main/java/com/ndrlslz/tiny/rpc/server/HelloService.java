@@ -7,7 +7,11 @@ public interface HelloService<T> {
 
     String say(String name);
 
-    String exception(String name);
+    String runtimeException(String name);
+
+    String checkedException(String name) throws CheckedException;
+
+    String uncheckedException(String name);
 
     Output handle(Input input);
 

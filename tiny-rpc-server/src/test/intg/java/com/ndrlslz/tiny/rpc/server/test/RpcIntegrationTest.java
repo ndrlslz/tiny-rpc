@@ -1,10 +1,8 @@
 package com.ndrlslz.tiny.rpc.server.test;
 
-import com.ndrlslz.tiny.rpc.server.Details;
-import com.ndrlslz.tiny.rpc.server.Input;
-import com.ndrlslz.tiny.rpc.server.Output;
+import com.ndrlslz.tiny.rpc.server.*;
 import com.ndrlslz.tiny.rpc.server.client.RpcTestClient;
-import com.ndrlslz.tiny.rpc.server.exception.TinyRpcServerException;
+import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import com.ndrlslz.tiny.rpc.core.serialization.HessianSerializer;
@@ -90,24 +88,40 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     public void should_get_magic_number_not_correct_exception() {
         Object responseValue = callRemoteMethodWithWrongMagicNumber("hello");
 
-        assertThat(responseValue, instanceOf(TinyRpcServerException.class));
-        assertThat(((TinyRpcServerException) responseValue).getMessage(), is("Magic number is not correct"));
+        assertThat(responseValue, instanceOf(TinyRpcException.class));
+        assertThat(((TinyRpcException) responseValue).getMessage(), is("Magic number is not correct"));
     }
 
     @Test
-    public void should_get_exception_response_when_method_throw_exception() {
-        Object responseValue = callRemoteMethod("exception", "Tom");
+    public void should_get_runtime_exception_response_when_method_throw_runtime_exception() {
+        Object responseValue = callRemoteMethod("runtimeException", "Tom");
 
-        assertThat(responseValue, instanceOf(TinyRpcServerException.class));
-        assertThat(((TinyRpcServerException) responseValue).getMessage(), is("Exception happened"));
+        assertThat(responseValue, instanceOf(RuntimeException.class));
+        assertThat(((RuntimeException) responseValue).getMessage(), is("Runtime exception happened"));
+    }
+
+    @Test
+    public void should_get_checked_exception_response_when_method_throw_checked_exception() {
+        Object responseValue = callRemoteMethod("checkedException", "Tom");
+
+        assertThat(responseValue, instanceOf(CheckedException.class));
+        assertThat(((CheckedException) responseValue).getMessage(), is("Checked exception happened"));
+    }
+
+    @Test
+    public void should_get_unchecked_exception_when_method_throw_unchecked_exception_given_interface_and_exception_in_same_jar() {
+        Object responseValue = callRemoteMethod("uncheckedException", "Tom");
+
+        assertThat(responseValue, instanceOf(UncheckedException.class));
+        assertThat(((UncheckedException) responseValue).getMessage(), is("Unchecked exception happened"));
     }
 
     @Test
     public void should_get_exception_response_when_method_not_match() {
         Object responseValue = callRemoteMethod("say");
 
-        assertThat(responseValue, instanceOf(TinyRpcServerException.class));
-        assertThat(((TinyRpcServerException) responseValue).getMessage(), containsString("No such accessible method: say()"));
+        assertThat(responseValue, instanceOf(TinyRpcException.class));
+        assertThat(((TinyRpcException) responseValue).getMessage(), containsString("No such accessible method: say()"));
     }
 
     @Test

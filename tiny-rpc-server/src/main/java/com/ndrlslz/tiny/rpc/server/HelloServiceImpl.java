@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class HelloServiceImpl<T> implements HelloService<T> {
-
     @Override
     public String hello() {
         return "hello world";
@@ -16,8 +15,18 @@ public class HelloServiceImpl<T> implements HelloService<T> {
     }
 
     @Override
-    public String exception(String name) {
-        throw new RuntimeException("Exception happened");
+    public String runtimeException(String name) {
+        throw new RuntimeException("Runtime exception happened");
+    }
+
+    @Override
+    public String checkedException(String name) throws CheckedException {
+        throw new CheckedException("Checked exception happened");
+    }
+
+    @Override
+    public String uncheckedException(String name) {
+        throw new UncheckedException("Unchecked exception happened");
     }
 
     @Override
