@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.server;
+package com.ndrlslz.tiny.rpc.core;
 
 import java.util.List;
 

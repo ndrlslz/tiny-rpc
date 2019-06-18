@@ -1,5 +1,6 @@
 package com.ndrlslz.tiny.rpc.server;
 
+import com.ndrlslz.tiny.rpc.core.HelloServiceImpl;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
 
 public class Test {

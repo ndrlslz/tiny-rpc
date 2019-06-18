@@ -1,6 +1,6 @@
 package com.ndrlslz.tiny.rpc.server.test;
 
-import com.ndrlslz.tiny.rpc.server.*;
+import com.ndrlslz.tiny.rpc.core.*;
 import com.ndrlslz.tiny.rpc.server.client.RpcTestClient;
 import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;

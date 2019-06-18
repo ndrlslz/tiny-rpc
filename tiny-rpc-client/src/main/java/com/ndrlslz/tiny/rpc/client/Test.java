@@ -8,19 +8,6 @@ import java.util.stream.IntStream;
 
 public class Test {
     public static void main(String[] args) throws Exception {
-//        HelloWorldService service = TinyRpcService.create()
-//                .service(HelloWorldService.class)
-//                .server("localhost:9999");
-//
-//        service.hello();
-
-
-//        HelloWorldServiceAsync service = TinyRpcService.create()
-//                .service(HelloWorldServiceAsync.class)
-//                .server("localhost:9999");
-//
-//        service.hello();
-
         TinyRpcClient tinyRpcClient = new TinyRpcClient("localhost", 8888);
         StopWatch watch = new StopWatch();
         watch.start();
