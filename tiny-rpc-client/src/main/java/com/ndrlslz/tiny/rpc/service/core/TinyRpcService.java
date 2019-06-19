@@ -26,4 +26,8 @@ public class TinyRpcService {
 
         return DynamicProxy.proxy(serviceInterface, tinyRpcClient);
     }
+
+    public void close() {
+        tinyRpcClient.close();
+    }
 }

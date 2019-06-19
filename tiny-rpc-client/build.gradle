@@ -3,6 +3,7 @@ apply plugin: "jacoco"
 dependencies {
     compile project(':tiny-rpc-core')
 
+    testCompile project(':tiny-rpc-server')
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.21.0'
 }
