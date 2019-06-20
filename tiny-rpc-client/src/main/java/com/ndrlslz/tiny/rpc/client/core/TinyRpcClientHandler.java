@@ -6,16 +6,24 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.LinkedBlockingQueue;
+
 public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcClientHandler.class);
-    public Object result;
+    public LinkedBlockingQueue<Object> resultQueue;
+
+    public TinyRpcClientHandler() {
+        this.resultQueue = new LinkedBlockingQueue<>(1);
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TinyRpcResponse msg) {
         LOGGER.debug("TinyRpcClient receive message, methodName: {}, type: {}, value: {}", msg.getMethodName(),
                 msg.getResponseType(), msg.getResponseValue());
 
-        result = msg.getResponseValue();
-        ctx.close();
+        Object result = msg.getResponseValue();
+
+        resultQueue.offer(result);
+//        ctx.close();
     }
 }

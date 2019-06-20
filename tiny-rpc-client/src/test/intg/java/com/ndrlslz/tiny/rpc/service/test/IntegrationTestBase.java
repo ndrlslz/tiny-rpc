@@ -5,6 +5,7 @@ import com.ndrlslz.tiny.rpc.core.HelloServiceImpl;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServerOptions;
 import com.ndrlslz.tiny.rpc.service.core.TinyRpcService;
+import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
 import org.junit.After;
 import org.junit.Before;
 
@@ -21,7 +22,8 @@ public class IntegrationTestBase {
                 .registerService(new HelloServiceImpl<String>())
                 .listen(6666);
 
-        tinyRpcService = TinyRpcService.create();
+        tinyRpcService = TinyRpcService.create(new TinyRpcServiceOptions()
+                .withTimeout(10));
         helloService = (HelloService) tinyRpcService
                 .service(HelloService.class)
                 .server("localhost", 6666);

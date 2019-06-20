@@ -4,4 +4,8 @@ public class TinyRpcException extends RuntimeException {
     public TinyRpcException(String message, Throwable cause) {
         super(message, cause);
     }
+
+    public TinyRpcException(String message) {
+        super(message);
+    }
 }

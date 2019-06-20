@@ -6,6 +6,7 @@ import com.ndrlslz.tiny.rpc.service.proxy.DynamicProxy;
 public class TinyRpcService {
     private Class serviceInterface;
     private TinyRpcClient tinyRpcClient;
+    private TinyRpcServiceOptions tinyRpcServiceOptions;
 
     private TinyRpcService() {
 
@@ -15,6 +16,12 @@ public class TinyRpcService {
         return new TinyRpcService();
     }
 
+    public static TinyRpcService create(TinyRpcServiceOptions options) {
+        TinyRpcService tinyRpcService = create();
+        tinyRpcService.tinyRpcServiceOptions = options;
+        return tinyRpcService;
+    }
+
     public TinyRpcService service(Class serviceInterface) {
         this.serviceInterface = serviceInterface;
 
@@ -22,7 +29,7 @@ public class TinyRpcService {
     }
 
     public Object server(String host, int port) {
-        this.tinyRpcClient = new TinyRpcClient(host, port);
+        this.tinyRpcClient = new TinyRpcClient(host, port, tinyRpcServiceOptions);
 
         return DynamicProxy.proxy(serviceInterface, tinyRpcClient);
     }

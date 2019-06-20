@@ -20,7 +20,7 @@ public class TinyRpcServer {
     private EventLoopGroup workerGroup;
     private Object serviceImpl;
     private TinyRpcServerOptions tinyRpcServerOptions;
-    private static EventExecutorGroup requestHandlerGroup;
+    private EventExecutorGroup requestHandlerGroup;
 
     private TinyRpcServer() {
 

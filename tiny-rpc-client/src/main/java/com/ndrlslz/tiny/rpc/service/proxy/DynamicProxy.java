@@ -9,7 +9,7 @@ public class DynamicProxy {
         return Proxy.newProxyInstance(clazz.getClassLoader(),
                 new Class[]{clazz},
                 (proxy, method, args) -> {
-                    Object result = tinyRpcClient.send(method.getName(), args);
+                    Object result = tinyRpcClient.invoke(method.getName(), args);
 
                     if (result instanceof Exception) {
                         throw (Exception) result;

@@ -71,10 +71,6 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
 
     private Object invokeMethod(TinyRpcRequest msg) {
         try {
-//            final Class<?>[] parameterTypes = ClassUtils.toClass(msg.getArgumentsValue());
-//            Method method = MethodUtils.getMatchingAccessibleMethod(serviceImpl.getClass(), msg.getMethodName(), parameterTypes);
-//
-//            method.invoke(serviceImpl, msg.getArgumentsValue());
             return MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
         } catch (NoSuchMethodException | IllegalAccessException exception) {
             LOGGER.error(exception.getMessage(), exception);
