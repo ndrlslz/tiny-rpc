@@ -1,9 +1,9 @@
 package com.ndrlslz.tiny.rpc.server.core;
 
+import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import com.ndrlslz.tiny.rpc.core.utils.ReflectUtils;
-import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static io.netty.channel.ChannelFutureListener.CLOSE;
 
@@ -71,7 +73,13 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
 
     private Object invokeMethod(TinyRpcRequest msg) {
         try {
-            return MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
+            Object response = MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
+
+            if (response instanceof Future) {
+                return ((Future) response).get();
+            }
+
+            return response;
         } catch (NoSuchMethodException | IllegalAccessException exception) {
             LOGGER.error(exception.getMessage(), exception);
 
@@ -98,6 +106,10 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
             }
 
             return new TinyRpcException(targetException.getMessage(), targetException);
+        } catch (InterruptedException | ExecutionException exception) {
+            LOGGER.error(exception.getMessage(), exception);
+
+            return exception;
         }
     }
 

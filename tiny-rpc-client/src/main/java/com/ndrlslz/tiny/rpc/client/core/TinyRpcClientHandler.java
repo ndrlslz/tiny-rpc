@@ -24,6 +24,5 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
         Object result = msg.getResponseValue();
 
         resultQueue.offer(result);
-//        ctx.close();
     }
 }

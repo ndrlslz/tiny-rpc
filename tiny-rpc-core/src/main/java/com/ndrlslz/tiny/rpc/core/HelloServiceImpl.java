@@ -1,9 +1,24 @@
 package com.ndrlslz.tiny.rpc.core;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class HelloServiceImpl<T> implements HelloService<T> {
+    @Override
+    public Future<String> helloAsync() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "hello world";
+        });
+    }
+
     @Override
     public String hello() {
         return "hello world";
