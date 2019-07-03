@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static io.netty.channel.ChannelFutureListener.CLOSE;
+import static java.util.Objects.isNull;
 
 public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcRequest> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcServerHandler.class);
@@ -39,7 +40,9 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
         TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
         tinyRpcResponse.setResponseValue(response);
         tinyRpcResponse.setMethodName(msg.getMethodName());
-        tinyRpcResponse.setResponseType(response.getClass());
+
+        Class<?> responseType = isNull(response) ? null : response.getClass();
+        tinyRpcResponse.setResponseType(responseType);
         tinyRpcResponse.setCorrelationId(msg.getCorrelationId());
 
         ctx.writeAndFlush(tinyRpcResponse);
@@ -71,15 +74,16 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
         }
     }
 
-    private Object invokeMethod(TinyRpcRequest msg) {
+    private Object invokeMethod(TinyRpcRequest tinyRpcRequest) {
         try {
-            Object response = MethodUtils.invokeMethod(serviceImpl, msg.getMethodName(), msg.getArgumentsValue());
+            Object response = MethodUtils.invokeMethod(serviceImpl, tinyRpcRequest.getMethodName(),
+                    tinyRpcRequest.getArgumentsValue());
 
-            if (response instanceof Future) {
-                return ((Future) response).get();
+            if (isAsyncMethod(response)) {
+                return getAsyncResult((Future) response);
+            } else {
+                return response;
             }
-
-            return response;
         } catch (NoSuchMethodException | IllegalAccessException exception) {
             LOGGER.error(exception.getMessage(), exception);
 
@@ -88,29 +92,47 @@ public class TinyRpcServerHandler extends SimpleChannelInboundHandler<TinyRpcReq
             LOGGER.error(exception.getMessage(), exception);
 
             Throwable targetException = exception.getTargetException();
+            return determineException(targetException);
+        }
+    }
 
-            if (isRuntimeException(targetException)) {
-                return targetException;
-            }
+    private boolean isAsyncMethod(Object response) {
+        return response instanceof Future;
+    }
 
-            if (isCheckedException(targetException)) {
-                return targetException;
-            }
-
-            if (isJavaException(targetException)) {
-                return targetException;
-            }
-
-            if (InterfaceAndExceptionInSameJar(serviceImpl, targetException)) {
-                return targetException;
-            }
-
-            return new TinyRpcException(targetException.getMessage(), targetException);
-        } catch (InterruptedException | ExecutionException exception) {
+    private Object getAsyncResult(Future response) {
+        try {
+            return response.get();
+        } catch (InterruptedException exception) {
             LOGGER.error(exception.getMessage(), exception);
 
             return exception;
+        } catch (ExecutionException exception) {
+            LOGGER.error(exception.getMessage(), exception);
+
+            Throwable cause = exception.getCause();
+            return determineException(cause);
         }
+    }
+
+    private Throwable determineException(Throwable targetException) {
+        if (isRuntimeException(targetException)) {
+            return targetException;
+        }
+
+        if (isCheckedException(targetException)) {
+            return targetException;
+        }
+
+        if (isJavaException(targetException)) {
+            return targetException;
+        }
+
+        if (InterfaceAndExceptionInSameJar(serviceImpl, targetException)) {
+            return targetException;
+        }
+
+        return new TinyRpcException(targetException.getMessage(), targetException);
     }
 
     private boolean InterfaceAndExceptionInSameJar(Object serviceImpl, Throwable targetException) {

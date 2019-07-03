@@ -15,8 +15,8 @@ public class DynamicProxy {
                         return CompletableFuture.supplyAsync(() -> {
                             try {
                                 return tinyRpcClient.invoke(method.getName(), args);
-                            } catch (Exception e) {
-                                return e;
+                            } catch (Exception exception) {
+                                return exception;
                             }
                         });
                     } else {

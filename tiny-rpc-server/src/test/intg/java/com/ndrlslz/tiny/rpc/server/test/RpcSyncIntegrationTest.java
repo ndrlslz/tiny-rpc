@@ -17,25 +17,7 @@ import java.util.UUID;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class RpcIntegrationTest extends IntegrationTestBase {
-    private RpcTestClient rpcClient;
-    private static final HessianSerializer HESSIAN_SERIALIZER = new HessianSerializer();
-
-    @Override
-    @Before
-    public void setUp() {
-        super.setUp();
-
-        rpcClient = new RpcTestClient("localhost", 6666);
-    }
-
-    @Override
-    @After
-    public void tearDown() {
-        super.tearDown();
-        rpcClient.close();
-    }
-
+public class RpcSyncIntegrationTest extends IntegrationTestBase {
     @Test
     public void should_call_hello_world_method() {
         Object response = callRemoteMethod("hello");
@@ -85,6 +67,12 @@ public class RpcIntegrationTest extends IntegrationTestBase {
     }
 
     @Test
+    public void should_call_null_method() {
+        Object response = callRemoteMethod("nullMethod");
+        assertThat(response, is(nullValue()));
+    }
+
+    @Test
     public void should_get_magic_number_not_correct_exception() {
         Object responseValue = callRemoteMethodWithWrongMagicNumber("hello");
 
@@ -129,41 +117,5 @@ public class RpcIntegrationTest extends IntegrationTestBase {
         sendHeartbeat();
         sendHeartbeat();
         sendHeartbeat();
-    }
-
-    private Object callRemoteMethod(String methodName, Object... arguments) {
-        byte[] bytes = generateRequest(methodName, arguments);
-
-        rpcClient.sendRpcRequest(bytes);
-        byte[] bytesResponse = rpcClient.receiveRpcResponse();
-
-        return generateResponse(bytesResponse).getResponseValue();
-    }
-
-    private Object callRemoteMethodWithWrongMagicNumber(String methodName, Object... arguments) {
-
-        byte[] bytes = generateRequest(methodName, arguments);
-
-        rpcClient.sendRpcRequestWithWrongMagicNumber(bytes);
-        byte[] bytesResponse = rpcClient.receiveRpcResponse();
-
-        return generateResponse(bytesResponse).getResponseValue();
-    }
-
-    private void sendHeartbeat() {
-        rpcClient.sendHeartBeat();
-    }
-
-    private byte[] generateRequest(String methodName, Object[] arguments) {
-        TinyRpcRequest tinyRpcRequest = new TinyRpcRequest();
-
-        tinyRpcRequest.setCorrelationId(UUID.randomUUID().toString());
-        tinyRpcRequest.setMethodName(methodName);
-        tinyRpcRequest.setArgumentsValue(arguments);
-        return HESSIAN_SERIALIZER.serialize(tinyRpcRequest);
-    }
-
-    private TinyRpcResponse generateResponse(byte[] response) {
-        return HESSIAN_SERIALIZER.deserialize(response, TinyRpcResponse.class);
     }
 }

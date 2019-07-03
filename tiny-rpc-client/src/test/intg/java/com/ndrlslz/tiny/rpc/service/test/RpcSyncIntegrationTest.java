@@ -11,7 +11,7 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class RpcIntegrationTest extends IntegrationTestBase {
+public class RpcSyncIntegrationTest extends IntegrationTestBase {
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
 
@@ -56,6 +56,13 @@ public class RpcIntegrationTest extends IntegrationTestBase {
 
         assertThat(result.size(), is(3));
         assertThat(result, hasItems("1@", "2@", "3@"));
+    }
+
+    @Test
+    public void should_call_null_method() {
+        String result = helloService.nullMethod();
+
+        assertThat(result, is(nullValue()));
     }
 
     @Test

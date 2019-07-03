@@ -1,6 +1,7 @@
 package com.ndrlslz.tiny.rpc.client.core;
 
 import com.ndrlslz.tiny.rpc.client.exception.TinyRpcTimeoutException;
+import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
 import io.netty.bootstrap.Bootstrap;
@@ -57,7 +58,11 @@ public class TinyRpcClient {
             return new TinyRpcTimeoutException(format("Timeout exception, cannot get response within %s seconds", tinyRpcServiceOptions.getTimeout()));
         }
 
-        return result;
+        if (result instanceof NullObject) {
+            return null;
+        } else {
+            return result;
+        }
     }
 
     private TinyRpcRequest buildTinyRpcRequest(String method, Object[] parameters) {
