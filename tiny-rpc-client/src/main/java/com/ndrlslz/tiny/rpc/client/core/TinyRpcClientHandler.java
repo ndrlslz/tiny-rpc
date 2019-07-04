@@ -15,8 +15,8 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcClientHandler.class);
     public LinkedBlockingQueue<Object> resultQueue;
 
-    public TinyRpcClientHandler() {
-        this.resultQueue = new LinkedBlockingQueue<>(1);
+    TinyRpcClientHandler() {
+        this.resultQueue = new LinkedBlockingQueue<>();
     }
 
     @Override

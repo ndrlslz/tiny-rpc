@@ -42,14 +42,15 @@ public class TinyRpcClient {
         this.port = port;
     }
 
-    public Object invoke(String method, Object[] parameters) throws Exception {
+    public Object invoke(String method, Object[] parameters) throws InterruptedException {
         ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
+
+        TinyRpcClientHandler handler = (TinyRpcClientHandler) channelFuture.channel().pipeline().last();
 
         TinyRpcRequest tinyRpcRequest = buildTinyRpcRequest(method, parameters);
 
         channelFuture.channel().writeAndFlush(tinyRpcRequest);
 
-        TinyRpcClientHandler handler = (TinyRpcClientHandler) channelFuture.channel().pipeline().last();
         Object result = handler.resultQueue.poll(tinyRpcServiceOptions.getTimeout(), TimeUnit.SECONDS);
 
         channelFuture.channel().close();

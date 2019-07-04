@@ -14,9 +14,10 @@ import java.util.concurrent.TimeUnit;
 public class IntegrationTestBase {
     private TinyRpcServer tinyRpcServer;
     private TinyRpcService tinyRpcService;
-    HelloService helloService;
+    HelloService<String> helloService;
 
     @Before
+    @SuppressWarnings("unchecked")
     public void setUp() {
         tinyRpcServer = TinyRpcServer.create(new TinyRpcServerOptions().withWorkerThreadCount(20))
                 .registerService(new HelloServiceImpl<String>())
@@ -24,7 +25,7 @@ public class IntegrationTestBase {
 
         tinyRpcService = TinyRpcService.create(new TinyRpcServiceOptions()
                 .withTimeout(10));
-        helloService = (HelloService) tinyRpcService
+        helloService = (HelloService<String>) tinyRpcService
                 .service(HelloService.class)
                 .server("localhost", 6666);
     }
