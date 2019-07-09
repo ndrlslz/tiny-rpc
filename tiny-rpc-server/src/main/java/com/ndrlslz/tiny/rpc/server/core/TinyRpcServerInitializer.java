@@ -14,11 +14,11 @@ import static java.util.Objects.nonNull;
 public class TinyRpcServerInitializer extends ChannelInitializer {
     private static final int HEARTBEAT_TIMEOUT_SECONDS = 10;
     private EventExecutorGroup requestHandlerGroup;
-    private Object serviceImpl;
+    private RequestHandler tinyRpcRequestHandler;
 
-    TinyRpcServerInitializer(EventExecutorGroup requestHandlerGroup, Object serviceImpl) {
+    TinyRpcServerInitializer(EventExecutorGroup requestHandlerGroup, RequestHandler tinyRpcRequestHandler) {
         this.requestHandlerGroup = requestHandlerGroup;
-        this.serviceImpl = serviceImpl;
+        this.tinyRpcRequestHandler = tinyRpcRequestHandler;
     }
 
     @Override
@@ -31,9 +31,9 @@ public class TinyRpcServerInitializer extends ChannelInitializer {
                 .addLast(new TinyRpcResponseEncoder());
 
         if (nonNull(requestHandlerGroup)) {
-            ch.pipeline().addLast(requestHandlerGroup, new TinyRpcServerHandler(serviceImpl));
+            ch.pipeline().addLast(requestHandlerGroup, new TinyRpcServerHandler(tinyRpcRequestHandler));
         } else {
-            ch.pipeline().addLast(new TinyRpcServerHandler(serviceImpl));
+            ch.pipeline().addLast(new TinyRpcServerHandler(tinyRpcRequestHandler));
         }
     }
 }

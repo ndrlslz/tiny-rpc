@@ -16,17 +16,6 @@ public class PerfTest {
 
         service.hello();
 
-//        StopWatch stopWatch = new StopWatch();
-//        stopWatch.start();
-//        IntStream.range(0, 10000).forEach(value -> {
-//            String hello = service.hello();
-//            System.out.println(hello);
-//        });
-//
-//        stopWatch.stop();
-//        System.out.println("Time: " + stopWatch.getTime(TimeUnit.SECONDS));
-//
-
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch finish = new CountDownLatch(10000);
 //        ExecutorService threadPool = new ThreadPoolExecutor(150, 150,
@@ -41,7 +30,7 @@ public class PerfTest {
             threadPool.submit(new Callable<String>() {
                 @Override
                 public String call() throws InterruptedException {
-//                    start.await();
+                    start.await();
                     try {
                         return service.hello();
                     } catch (Exception e) {
@@ -58,7 +47,7 @@ public class PerfTest {
         finish.await();
 
         stopWatch.stop();
-        System.out.println("Time: " + stopWatch.getTime(TimeUnit.SECONDS));
+        System.out.println("Time: " + stopWatch.getTime(TimeUnit.MILLISECONDS));
 
 //        TimeUnit.SECONDS.sleep(10);
         threadPool.shutdown();

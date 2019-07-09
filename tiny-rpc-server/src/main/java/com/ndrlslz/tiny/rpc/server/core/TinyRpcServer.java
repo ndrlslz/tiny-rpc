@@ -47,6 +47,7 @@ public class TinyRpcServer {
             requestHandlerGroup = new DefaultEventExecutorGroup(tinyRpcServerOptions.getWorkerThreadCount());
         }
 
+        RequestHandler tinyRpcRequestHandler = new TinyRpcRequestHandler(serviceImpl);
         bossGroup = new NioEventLoopGroup();
         workerGroup = new NioEventLoopGroup();
 
@@ -56,7 +57,7 @@ public class TinyRpcServer {
             bootstrap.group(bossGroup, workerGroup)
                     .channel(NioServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
-                    .childHandler(new TinyRpcServerInitializer(requestHandlerGroup, serviceImpl));
+                    .childHandler(new TinyRpcServerInitializer(requestHandlerGroup, tinyRpcRequestHandler));
 
             bootstrap.bind(port).sync();
         } catch (InterruptedException e) {
