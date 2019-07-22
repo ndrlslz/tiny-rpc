@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class HelloServiceImpl<T> implements HelloService<T> {
@@ -57,6 +58,11 @@ public class HelloServiceImpl<T> implements HelloService<T> {
 
     @Override
     public Future<String> helloAsync() {
+        try {
+            TimeUnit.SECONDS.sleep(8);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return CompletableFuture.supplyAsync(() -> "hello world");
     }
 

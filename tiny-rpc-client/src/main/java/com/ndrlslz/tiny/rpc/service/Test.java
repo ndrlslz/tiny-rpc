@@ -20,6 +20,7 @@ public class Test {
 
 
         service.hello();
+        System.out.println("start");
         Future future = service.helloAsync();
         Future future1 = service.helloAsync();
 

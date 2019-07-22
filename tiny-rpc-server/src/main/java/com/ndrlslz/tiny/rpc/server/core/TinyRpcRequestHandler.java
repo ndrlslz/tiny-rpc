@@ -5,21 +5,19 @@ import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import com.ndrlslz.tiny.rpc.core.utils.ReflectUtils;
 import io.netty.channel.ChannelHandlerContext;
+import io.reactivex.Single;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import static java.util.Objects.isNull;
 
 public class TinyRpcRequestHandler implements RequestHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcRequestHandler.class);
-    private ExecutorService threadPool = Executors.newCachedThreadPool();
     private Object serviceImpl;
 
     TinyRpcRequestHandler(Object serviceImpl) {
@@ -27,19 +25,23 @@ public class TinyRpcRequestHandler implements RequestHandler {
     }
 
     public void handle(ChannelHandlerContext ctx, TinyRpcRequest msg) {
-        threadPool.submit(() -> {
-            Object response = invokeMethod(msg);
+        Single
+                .just(msg)
+                .subscribe((tinyRpcRequest, throwable) -> handleTinyRpcRequest(ctx, msg));
+    }
 
-            TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
-            tinyRpcResponse.setResponseValue(response);
-            tinyRpcResponse.setMethodName(msg.getMethodName());
+    private void handleTinyRpcRequest(ChannelHandlerContext ctx, TinyRpcRequest msg) {
+        Object response = invokeMethod(msg);
 
-            Class<?> responseType = isNull(response) ? null : response.getClass();
-            tinyRpcResponse.setResponseType(responseType);
-            tinyRpcResponse.setCorrelationId(msg.getCorrelationId());
+        TinyRpcResponse tinyRpcResponse = new TinyRpcResponse();
+        tinyRpcResponse.setResponseValue(response);
+        tinyRpcResponse.setMethodName(msg.getMethodName());
 
-            ctx.writeAndFlush(tinyRpcResponse);
-        });
+        Class<?> responseType = isNull(response) ? null : response.getClass();
+        tinyRpcResponse.setResponseType(responseType);
+        tinyRpcResponse.setCorrelationId(msg.getCorrelationId());
+
+        ctx.writeAndFlush(tinyRpcResponse);
     }
 
     private Object invokeMethod(TinyRpcRequest tinyRpcRequest) {

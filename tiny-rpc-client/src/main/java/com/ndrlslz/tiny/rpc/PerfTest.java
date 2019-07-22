@@ -16,8 +16,11 @@ public class PerfTest {
 
         service.hello();
 
+
+        int count = 10000;
+
         CountDownLatch start = new CountDownLatch(1);
-        CountDownLatch finish = new CountDownLatch(10000);
+        CountDownLatch finish = new CountDownLatch(count);
 //        ExecutorService threadPool = new ThreadPoolExecutor(150, 150,
 //                0L, TimeUnit.MILLISECONDS,
 //                new LinkedBlockingQueue<Runnable>());
@@ -26,7 +29,7 @@ public class PerfTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        IntStream.range(0, 10000).forEach(index -> {
+        IntStream.range(0, count).forEach(index -> {
             threadPool.submit(new Callable<String>() {
                 @Override
                 public String call() throws InterruptedException {

@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -66,7 +67,6 @@ public class RpcAsyncIntegrationTest extends IntegrationTestBase {
     @Test
     public void should_get_runtime_exception_response_when_async_method_throw_runtime_exception() {
         Future<String> future = helloService.runtimeExceptionAsync("Tom");
-
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
