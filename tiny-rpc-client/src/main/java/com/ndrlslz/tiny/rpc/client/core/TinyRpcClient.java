@@ -1,5 +1,7 @@
 package com.ndrlslz.tiny.rpc.client.core;
 
+import com.ndrlslz.tiny.rpc.client.callback.MessageCallback;
+import com.ndrlslz.tiny.rpc.client.callback.MessageCallbackStorage;
 import com.ndrlslz.tiny.rpc.client.exception.TinyRpcTimeoutException;
 import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
@@ -12,7 +14,6 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
 import static java.util.Objects.isNull;
@@ -45,18 +46,20 @@ public class TinyRpcClient {
     public Object invoke(String method, Object[] parameters) throws InterruptedException {
         ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
 
-        TinyRpcClientHandler handler = (TinyRpcClientHandler) channelFuture.channel().pipeline().last();
-
         TinyRpcRequest tinyRpcRequest = buildTinyRpcRequest(method, parameters);
+
+        MessageCallback messageCallback = new MessageCallback();
+        MessageCallbackStorage.put(tinyRpcRequest.getCorrelationId(), messageCallback);
 
         channelFuture.channel().writeAndFlush(tinyRpcRequest);
 
-        Object result = handler.resultQueue.poll(tinyRpcServiceOptions.getTimeout(), TimeUnit.SECONDS);
+        Object result = messageCallback.get(tinyRpcServiceOptions.getTimeout());
 
         channelFuture.channel().close();
 
         if (isNull(result)) {
-            return new TinyRpcTimeoutException(format("Timeout exception, cannot get response within %s seconds", tinyRpcServiceOptions.getTimeout()));
+            return new TinyRpcTimeoutException(format("Timeout exception, cannot get response within %s seconds",
+                    tinyRpcServiceOptions.getTimeout()));
         }
 
         if (result instanceof NullObject) {
@@ -70,6 +73,7 @@ public class TinyRpcClient {
         TinyRpcRequest tinyRpcRequest = new TinyRpcRequest();
         tinyRpcRequest.setMethodName(method);
         tinyRpcRequest.setArgumentsValue(parameters);
+        //TODO maybe snow id?
         tinyRpcRequest.setCorrelationId(UUID.randomUUID().toString());
         return tinyRpcRequest;
     }
