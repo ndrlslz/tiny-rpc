@@ -58,11 +58,6 @@ public class HelloServiceImpl<T> implements HelloService<T> {
 
     @Override
     public Future<String> helloAsync() {
-        try {
-            TimeUnit.SECONDS.sleep(8);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         return CompletableFuture.supplyAsync(() -> "hello world");
     }
 

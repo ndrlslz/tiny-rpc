@@ -15,18 +15,23 @@ public class MessageCallback {
     }
 
     public Object get(Integer timeout) throws InterruptedException {
-        lock.lock();
-        MessageCallbackCondition.await(timeout, TimeUnit.SECONDS);
-        lock.unlock();
+        try {
+            lock.lock();
+            MessageCallbackCondition.await(timeout, TimeUnit.SECONDS);
 
-        return result;
+            return result;
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void done(Object object) {
-        this.result = object;
-
-        lock.lock();
-        MessageCallbackCondition.signal();
-        lock.unlock();
+        try {
+            lock.lock();
+            MessageCallbackCondition.signalAll();
+            this.result = object;
+        } finally {
+            lock.unlock();
+        }
     }
 }

@@ -16,16 +16,24 @@ public class PerfTest {
 
         service.hello();
 
+        ExecutorService threadPool = Executors.newFixedThreadPool(1024);
 
-        int count = 10000;
+        run(service, threadPool);
+
+//        TimeUnit.SECONDS.sleep(20);
+//
+//        run(service, threadPool);
+
+        threadPool.shutdown();
+        tinyRpcService.close();
+    }
+
+    private static void run(HelloService service, ExecutorService threadPool) throws InterruptedException {
+        int count = 1000000;
 
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch finish = new CountDownLatch(count);
-//        ExecutorService threadPool = new ThreadPoolExecutor(150, 150,
-//                0L, TimeUnit.MILLISECONDS,
-//                new LinkedBlockingQueue<Runnable>());
 
-        ExecutorService threadPool = Executors.newFixedThreadPool(128);
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
@@ -51,9 +59,5 @@ public class PerfTest {
 
         stopWatch.stop();
         System.out.println("Time: " + stopWatch.getTime(TimeUnit.MILLISECONDS));
-
-//        TimeUnit.SECONDS.sleep(10);
-        threadPool.shutdown();
-        tinyRpcService.close();
     }
 }

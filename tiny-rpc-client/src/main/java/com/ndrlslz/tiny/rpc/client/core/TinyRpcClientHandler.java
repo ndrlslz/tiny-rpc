@@ -3,6 +3,8 @@ package com.ndrlslz.tiny.rpc.client.core;
 import com.ndrlslz.tiny.rpc.client.callback.MessageCallback;
 import com.ndrlslz.tiny.rpc.client.callback.MessageCallbackStorage;
 import com.ndrlslz.tiny.rpc.client.model.NullObject;
+import com.ndrlslz.tiny.rpc.client.pool.ConnectionPool;
+import com.ndrlslz.tiny.rpc.client.pool.PooledConnection;
 import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -16,6 +18,11 @@ import java.util.Objects;
 public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcClientHandler.class);
     private String correlationId;
+    private ConnectionPool connectionPool;
+
+    public TinyRpcClientHandler(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
+    }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, TinyRpcResponse msg) {
@@ -38,6 +45,7 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        connectionPool.removeConnection(new PooledConnection(ctx.channel()));
         super.channelInactive(ctx);
     }
 
