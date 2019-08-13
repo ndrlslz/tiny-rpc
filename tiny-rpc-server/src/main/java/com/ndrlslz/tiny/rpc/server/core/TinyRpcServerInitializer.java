@@ -12,7 +12,7 @@ import io.netty.util.concurrent.EventExecutorGroup;
 import static java.util.Objects.nonNull;
 
 public class TinyRpcServerInitializer extends ChannelInitializer {
-    private static final int HEARTBEAT_TIMEOUT_SECONDS = 10;
+    private static final int HEARTBEAT_TIMEOUT_SECONDS = 100;
     private EventExecutorGroup requestHandlerGroup;
     private RequestHandler tinyRpcRequestHandler;
 

@@ -8,7 +8,7 @@ import java.util.concurrent.*;
 
 public class DynamicProxy {
     private static final int CORE_POOL_SIZE = 16;
-    private static final int MAXIMUM_POOL_SIZE = 256;
+    private static final int MAXIMUM_POOL_SIZE = 128;
     private static final long KEEP_ALIVE_TIME = 60L;
     private static ExecutorService threadPool = new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE,
             KEEP_ALIVE_TIME, TimeUnit.SECONDS, new LinkedBlockingQueue<>());

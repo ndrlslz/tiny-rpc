@@ -10,11 +10,16 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 public class DefaultConnectionPool implements ConnectionPool {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionPool.class);
     private volatile AtomicInteger currentConnectionCount;
+    private ReentrantLock lockOfCreateConnection;
     private LinkedBlockingQueue<PooledConnection> availableConnections;
     private CopyOnWriteArrayList<PooledConnection> usedConnections;
     private int minCount;
@@ -32,6 +37,7 @@ public class DefaultConnectionPool implements ConnectionPool {
         availableConnections = new LinkedBlockingQueue<>(maxCount);
         usedConnections = new CopyOnWriteArrayList<>();
         currentConnectionCount = new AtomicInteger();
+        lockOfCreateConnection = new ReentrantLock();
     }
 
     public void printConnections() {
@@ -47,28 +53,36 @@ public class DefaultConnectionPool implements ConnectionPool {
     public void InitConnections() {
         IntStream.range(0, minCount).forEach(value -> {
             try {
-                ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-                availableConnections.offer(new PooledConnection(channelFuture.channel()));
+                PooledConnection pooledConnection = createNewConnection();
+                availableConnections.offer(pooledConnection);
             } catch (InterruptedException exception) {
                 LOGGER.error("Failed to create new channel", exception);
             }
         });
-
-        currentConnectionCount.set(minCount);
     }
 
     @Override
-    public synchronized void createConnection() {
-        if (currentConnectionCount.get() < maxCount) {
+    public void createConnection() {
+        if (canCreateConnection()) {
+            lockOfCreateConnection.lock();
+
             try {
-                ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-                PooledConnection pooledConnection = new PooledConnection(channelFuture.channel());
-                availableConnections.offer(pooledConnection);
-                currentConnectionCount.incrementAndGet();
-            } catch (InterruptedException exception) {
-                LOGGER.error("Failed to create new channel", exception);
+                if (canCreateConnection()) {
+                    try {
+                        PooledConnection pooledConnection = createNewConnection();
+                        availableConnections.offer(pooledConnection);
+                    } catch (InterruptedException exception) {
+                        LOGGER.error("Failed to create new channel", exception);
+                    }
+                }
+            } finally {
+                lockOfCreateConnection.unlock();
             }
         }
+    }
+
+    private boolean canCreateConnection() {
+        return currentConnectionCount.get() < maxCount;
     }
 
     @Override
@@ -78,29 +92,13 @@ public class DefaultConnectionPool implements ConnectionPool {
         }
 
         if (availableConnections.isEmpty()) {
-            if (currentConnectionCount.get() < maxCount) {
-                createConnection();
+            PooledConnection pooledConnection = assignConnection();
+            if (nonNull(pooledConnection)) {
+                return pooledConnection;
             }
-
-            return getActiveConnection();
         }
 
         return getActiveConnection();
-    }
-
-    private PooledConnection getActiveConnection() throws InterruptedException {
-        PooledConnection connection = availableConnections.poll(10, TimeUnit.SECONDS);
-        if (connection == null) {
-            throw new TinyRpcNoAvailableConnectionException("No available connection can be used, and cannot create new connection as well");
-        }
-
-        if (!connection.isActive()) {
-            removeConnection(connection);
-            return getActiveConnection();
-        } else {
-            usedConnections.add(connection);
-            return connection;
-        }
     }
 
     @Override
@@ -120,5 +118,50 @@ public class DefaultConnectionPool implements ConnectionPool {
     public synchronized void close() {
         availableConnections.forEach(PooledConnection::close);
         usedConnections.forEach(PooledConnection::close);
+    }
+
+    private PooledConnection assignConnection() {
+        if (canCreateConnection()) {
+            lockOfCreateConnection.lock();
+
+            try {
+                if (canCreateConnection()) {
+                    try {
+                        PooledConnection pooledConnection = createNewConnection();
+                        usedConnections.add(pooledConnection);
+
+                        return pooledConnection;
+                    } catch (InterruptedException exception) {
+                        LOGGER.error("Failed to create new channel", exception);
+                    }
+                }
+            } finally {
+                lockOfCreateConnection.unlock();
+            }
+        }
+
+        return null;
+    }
+
+    private PooledConnection createNewConnection() throws InterruptedException {
+        ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
+        PooledConnection pooledConnection = new PooledConnection(channelFuture.channel());
+        currentConnectionCount.incrementAndGet();
+        return pooledConnection;
+    }
+
+    private PooledConnection getActiveConnection() throws InterruptedException {
+        PooledConnection connection = availableConnections.poll(10, TimeUnit.SECONDS);
+        if (isNull(connection)) {
+            throw new TinyRpcNoAvailableConnectionException("No available connection can be used, and cannot create new connection as well");
+        }
+
+        if (!connection.isActive()) {
+            removeConnection(connection);
+            return getActiveConnection();
+        } else {
+            usedConnections.add(connection);
+            return connection;
+        }
     }
 }

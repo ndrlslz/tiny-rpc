@@ -36,7 +36,7 @@ public class TinyRpcClient {
         workerGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
 
-        this.defaultConnectionPool = new DefaultConnectionPool(bootstrap, host, port, 10, 100);
+        this.defaultConnectionPool = new DefaultConnectionPool(bootstrap, host, port, 10, 20);
 
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)

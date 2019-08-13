@@ -29,7 +29,7 @@ public class PerfTest {
     }
 
     private static void run(HelloService service, ExecutorService threadPool) throws InterruptedException {
-        int count = 1000000;
+        int count = 100000;
 
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch finish = new CountDownLatch(count);
