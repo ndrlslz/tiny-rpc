@@ -1,15 +1,13 @@
 package com.ndrlslz.tiny.rpc.service.core;
 
 import com.ndrlslz.tiny.rpc.client.core.TinyRpcClient;
-import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.service.proxy.DynamicProxy;
-
-import java.util.concurrent.Future;
 
 public class TinyRpcService {
     private Class serviceInterface;
     private TinyRpcClient tinyRpcClient;
     private TinyRpcServiceOptions tinyRpcServiceOptions;
+    private DynamicProxy dynamicProxy;
 
     private TinyRpcService() {
 
@@ -33,11 +31,13 @@ public class TinyRpcService {
 
     public Object server(String host, int port) {
         this.tinyRpcClient = new TinyRpcClient(host, port, tinyRpcServiceOptions);
+        dynamicProxy = new DynamicProxy(tinyRpcClient);
 
-        return DynamicProxy.proxy(serviceInterface, tinyRpcClient);
+        return dynamicProxy.proxy(serviceInterface);
     }
 
     public void close() {
         tinyRpcClient.close();
+        dynamicProxy.closeThreadPool();
     }
 }

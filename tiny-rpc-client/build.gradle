@@ -67,7 +67,8 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    excludes: ['com/ndrlslz/model']
+                    excludes: ['com/ndrlslz/tiny/rpc/client/model',
+                               'com/ndrlslz/tiny/rpc/client/exception']
             )
         })
     }
@@ -80,7 +81,8 @@ jacocoTestCoverageVerification {
     afterEvaluate {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it,
-                    excludes: ['com/ndrlslz/model']
+                    excludes: ['com/ndrlslz/tiny/rpc/model',
+                               'com/ndrlslz/tiny/rpc/client/exception']
             )
         })
     }

@@ -7,7 +7,6 @@ import com.ndrlslz.tiny.rpc.client.pool.ConnectionPool;
 import com.ndrlslz.tiny.rpc.client.pool.PooledConnection;
 import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
-import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
     private String correlationId;
     private ConnectionPool connectionPool;
 
-    public TinyRpcClientHandler(ConnectionPool connectionPool) {
+    TinyRpcClientHandler(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

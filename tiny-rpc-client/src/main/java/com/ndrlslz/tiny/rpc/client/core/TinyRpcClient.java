@@ -28,7 +28,7 @@ public class TinyRpcClient {
     private NioEventLoopGroup workerGroup;
     private final Bootstrap bootstrap;
     private TinyRpcServiceOptions tinyRpcServiceOptions;
-    private DefaultConnectionPool defaultConnectionPool;
+    private DefaultConnectionPool connectionPool;
 
     public TinyRpcClient(String host, int port, TinyRpcServiceOptions tinyRpcServiceOptions) {
         this.tinyRpcServiceOptions = isNull(tinyRpcServiceOptions) ? new TinyRpcServiceOptions() : tinyRpcServiceOptions;
@@ -36,36 +36,36 @@ public class TinyRpcClient {
         workerGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
 
-        this.defaultConnectionPool = new DefaultConnectionPool(bootstrap, host, port, 10, 20);
+        this.connectionPool = new DefaultConnectionPool(tinyRpcServiceOptions, bootstrap, host, port);
 
         bootstrap.group(workerGroup)
                 .channel(NioSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     protected void initChannel(SocketChannel ch) {
-                        ch.pipeline().addLast(new TinyRpcClientInitializer(defaultConnectionPool));
+                        ch.pipeline().addLast(new TinyRpcClientInitializer(connectionPool));
                     }
                 });
 
         this.host = host;
         this.port = port;
 
-        defaultConnectionPool.InitConnections();
+        connectionPool.InitConnections();
     }
 
     public Object invoke(String method, Object[] parameters) throws InterruptedException {
-//        defaultConnectionPool.printConnections();
+//        connectionPool.printConnections();
         TinyRpcRequest tinyRpcRequest = buildTinyRpcRequest(method, parameters);
 
         MessageCallback messageCallback = new MessageCallback();
         MessageCallbackStorage.put(tinyRpcRequest.getCorrelationId(), messageCallback);
 
-        PooledConnection connection = defaultConnectionPool.borrowConnection();
+        PooledConnection connection = connectionPool.borrowConnection();
         connection.writeAndFlush(tinyRpcRequest);
 
         Object result = messageCallback.get(tinyRpcServiceOptions.getTimeout());
 
-        defaultConnectionPool.surrenderConnection(connection);
+        connectionPool.surrenderConnection(connection);
 
         if (isNull(result)) {
             return new TinyRpcTimeoutException(format("Timeout exception, cannot get response within %s seconds",
@@ -89,7 +89,7 @@ public class TinyRpcClient {
     }
 
     public void close() {
-        defaultConnectionPool.close();
+        connectionPool.close();
         workerGroup.shutdownGracefully();
     }
 }

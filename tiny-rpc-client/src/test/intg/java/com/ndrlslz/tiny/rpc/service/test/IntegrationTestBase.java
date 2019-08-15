@@ -24,7 +24,9 @@ public class IntegrationTestBase {
                 .listen(6666);
 
         tinyRpcService = TinyRpcService.create(new TinyRpcServiceOptions()
-                .withTimeout(10));
+                .withTimeout(10)
+                .withMinConnectionCount(10)
+                .withMaxConnectionCount(100));
         helloService = (HelloService<String>) tinyRpcService
                 .service(HelloService.class)
                 .server("localhost", 6666);

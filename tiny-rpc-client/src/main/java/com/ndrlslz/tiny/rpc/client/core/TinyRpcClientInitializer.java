@@ -7,14 +7,11 @@ import com.ndrlslz.tiny.rpc.core.codec.ProtocolDecoder;
 import com.ndrlslz.tiny.rpc.core.codec.ProtocolEncoder;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
-import io.netty.util.concurrent.EventExecutorGroup;
-
-import static java.util.Objects.nonNull;
 
 public class TinyRpcClientInitializer extends ChannelInitializer {
     private ConnectionPool connectionPool;
 
-    public TinyRpcClientInitializer(ConnectionPool connectionPool) {
+    TinyRpcClientInitializer(ConnectionPool connectionPool) {
         this.connectionPool = connectionPool;
     }
 

@@ -2,6 +2,7 @@ package com.ndrlslz.tiny.rpc;
 
 import com.ndrlslz.tiny.rpc.core.HelloService;
 import com.ndrlslz.tiny.rpc.service.core.TinyRpcService;
+import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.concurrent.*;
@@ -9,7 +10,11 @@ import java.util.stream.IntStream;
 
 public class PerfTest {
     public static void main(String[] args) throws InterruptedException {
-        TinyRpcService tinyRpcService = TinyRpcService.create();
+        TinyRpcService tinyRpcService = TinyRpcService.create(new TinyRpcServiceOptions()
+                .withTimeout(10)
+                .withMinConnectionCount(10)
+                .withMaxConnectionCount(100));
+
         HelloService service = (HelloService) tinyRpcService
                 .service(HelloService.class)
                 .server("localhost", 8888);
@@ -29,7 +34,7 @@ public class PerfTest {
     }
 
     private static void run(HelloService service, ExecutorService threadPool) throws InterruptedException {
-        int count = 100000;
+        int count = 1000000;
 
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch finish = new CountDownLatch(count);
@@ -43,7 +48,7 @@ public class PerfTest {
                 public String call() throws InterruptedException {
                     start.await();
                     try {
-                        return service.hello();
+                        return (String) service.hello();
                     } catch (Exception e) {
                         System.out.println(e.getClass());
                         e.printStackTrace();

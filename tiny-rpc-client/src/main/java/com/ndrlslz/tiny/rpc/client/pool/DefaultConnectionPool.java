@@ -1,6 +1,7 @@
 package com.ndrlslz.tiny.rpc.client.pool;
 
 import com.ndrlslz.tiny.rpc.client.exception.TinyRpcNoAvailableConnectionException;
+import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import static java.util.Objects.nonNull;
 public class DefaultConnectionPool implements ConnectionPool {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultConnectionPool.class);
     private volatile AtomicInteger currentConnectionCount;
+    private TinyRpcServiceOptions tinyRpcServiceOptions;
     private ReentrantLock lockOfCreateConnection;
     private LinkedBlockingQueue<PooledConnection> availableConnections;
     private CopyOnWriteArrayList<PooledConnection> usedConnections;
@@ -28,12 +30,13 @@ public class DefaultConnectionPool implements ConnectionPool {
     private String host;
     private int port;
 
-    public DefaultConnectionPool(Bootstrap bootstrap, String host, int port, int minCount, int maxCount) {
+    public DefaultConnectionPool(TinyRpcServiceOptions options, Bootstrap bootstrap, String host, int port) {
+        this.tinyRpcServiceOptions = options;
         this.bootstrap = bootstrap;
         this.host = host;
         this.port = port;
-        this.minCount = minCount;
-        this.maxCount = maxCount;
+        this.minCount = options.getMinConnectionCount();
+        this.maxCount = options.getMaxConnectionCount();
         availableConnections = new LinkedBlockingQueue<>(maxCount);
         usedConnections = new CopyOnWriteArrayList<>();
         currentConnectionCount = new AtomicInteger();
@@ -81,13 +84,9 @@ public class DefaultConnectionPool implements ConnectionPool {
         }
     }
 
-    private boolean canCreateConnection() {
-        return currentConnectionCount.get() < maxCount;
-    }
-
     @Override
     public PooledConnection borrowConnection() throws InterruptedException {
-        if (currentConnectionCount.get() < minCount) {
+        if (needCreateConnection()) {
             createConnection();
         }
 
@@ -141,6 +140,14 @@ public class DefaultConnectionPool implements ConnectionPool {
         }
 
         return null;
+    }
+
+    private boolean canCreateConnection() {
+        return currentConnectionCount.get() < maxCount;
+    }
+
+    private boolean needCreateConnection() {
+        return currentConnectionCount.get() < minCount;
     }
 
     private PooledConnection createNewConnection() throws InterruptedException {
