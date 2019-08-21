@@ -13,7 +13,7 @@ public class DynamicProxy {
     private static final int CORE_POOL_SIZE = 16;
     private static final int MAXIMUM_POOL_SIZE = 128;
     private static final long KEEP_ALIVE_TIME = 60L;
-    private ExecutorService threadPool;
+    private volatile ExecutorService threadPool;
     private TinyRpcClient tinyRpcClient;
 
     public DynamicProxy(TinyRpcClient tinyRpcClient) {

@@ -6,13 +6,19 @@ import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.client.pool.ConnectionPool;
 import com.ndrlslz.tiny.rpc.client.pool.PooledConnection;
 import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
+import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcHeartbeat;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
+import java.util.UUID;
+
+import static com.ndrlslz.tiny.rpc.client.pool.PooledConnection.pooledConnectionOf;
 
 public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcClientHandler.class);
@@ -44,7 +50,7 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
 
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        connectionPool.removeConnection(new PooledConnection(ctx.channel()));
+        connectionPool.removeConnection(pooledConnectionOf(ctx.channel()));
         super.channelInactive(ctx);
     }
 
@@ -56,5 +62,21 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
 
         messageCallback.done(new TinyRpcException(cause.getMessage(), cause));
         MessageCallbackStorage.remove(correlationId);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent event = (IdleStateEvent) evt;
+            if (event.state() == IdleState.WRITER_IDLE) {
+                TinyRpcHeartbeat tinyRpcHeartbeat = new TinyRpcHeartbeat();
+                tinyRpcHeartbeat.setCorrelationId(UUID.randomUUID().toString());
+
+                LOGGER.info("send heartbeat message");
+                ctx.writeAndFlush(tinyRpcHeartbeat);
+            }
+        } else {
+            super.userEventTriggered(ctx, evt);
+        }
     }
 }

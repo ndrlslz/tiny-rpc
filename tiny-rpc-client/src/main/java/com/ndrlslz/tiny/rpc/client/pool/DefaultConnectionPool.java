@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.IntStream;
 
+import static com.ndrlslz.tiny.rpc.client.pool.PooledConnection.pooledConnectionOf;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
@@ -35,8 +36,8 @@ public class DefaultConnectionPool implements ConnectionPool {
         this.bootstrap = bootstrap;
         this.host = host;
         this.port = port;
-        this.minCount = options.getMinConnectionCount();
-        this.maxCount = options.getMaxConnectionCount();
+        this.minCount = tinyRpcServiceOptions.getMinConnectionCount();
+        this.maxCount = tinyRpcServiceOptions.getMaxConnectionCount();
         availableConnections = new LinkedBlockingQueue<>(maxCount);
         usedConnections = new CopyOnWriteArrayList<>();
         currentConnectionCount = new AtomicInteger();
@@ -108,6 +109,7 @@ public class DefaultConnectionPool implements ConnectionPool {
 
     @Override
     public void removeConnection(PooledConnection connection) {
+        System.out.println("remove connection");
         availableConnections.remove(connection);
         usedConnections.remove(connection);
         currentConnectionCount.decrementAndGet();
@@ -152,7 +154,7 @@ public class DefaultConnectionPool implements ConnectionPool {
 
     private PooledConnection createNewConnection() throws InterruptedException {
         ChannelFuture channelFuture = bootstrap.connect(host, port).sync();
-        PooledConnection pooledConnection = new PooledConnection(channelFuture.channel());
+        PooledConnection pooledConnection = pooledConnectionOf(channelFuture.channel());
         currentConnectionCount.incrementAndGet();
         return pooledConnection;
     }

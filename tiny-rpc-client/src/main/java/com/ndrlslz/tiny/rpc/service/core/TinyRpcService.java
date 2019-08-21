@@ -14,11 +14,11 @@ public class TinyRpcService {
     }
 
     public static TinyRpcService create() {
-        return new TinyRpcService();
+        return create(new TinyRpcServiceOptions());
     }
 
     public static TinyRpcService create(TinyRpcServiceOptions options) {
-        TinyRpcService tinyRpcService = create();
+        TinyRpcService tinyRpcService = new TinyRpcService();
         tinyRpcService.tinyRpcServiceOptions = options;
         return tinyRpcService;
     }

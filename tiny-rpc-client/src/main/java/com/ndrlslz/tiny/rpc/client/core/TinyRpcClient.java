@@ -31,8 +31,6 @@ public class TinyRpcClient {
     private DefaultConnectionPool connectionPool;
 
     public TinyRpcClient(String host, int port, TinyRpcServiceOptions tinyRpcServiceOptions) {
-        this.tinyRpcServiceOptions = isNull(tinyRpcServiceOptions) ? new TinyRpcServiceOptions() : tinyRpcServiceOptions;
-
         workerGroup = new NioEventLoopGroup();
         bootstrap = new Bootstrap();
 
@@ -49,6 +47,7 @@ public class TinyRpcClient {
 
         this.host = host;
         this.port = port;
+        this.tinyRpcServiceOptions = tinyRpcServiceOptions;
 
         connectionPool.InitConnections();
     }

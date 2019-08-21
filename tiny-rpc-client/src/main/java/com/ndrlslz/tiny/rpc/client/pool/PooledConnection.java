@@ -9,8 +9,12 @@ import java.util.Objects;
 public class PooledConnection {
     private Channel channel;
 
-    public PooledConnection(Channel channel) {
+    private PooledConnection(Channel channel) {
         this.channel = channel;
+    }
+
+    public static PooledConnection pooledConnectionOf(Channel channel) {
+        return new PooledConnection(channel);
     }
 
     public void writeAndFlush(TinyRpcRequest tinyRpcRequest) {
