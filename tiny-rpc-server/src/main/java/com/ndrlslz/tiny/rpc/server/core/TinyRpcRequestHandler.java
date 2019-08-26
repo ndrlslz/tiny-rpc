@@ -6,6 +6,8 @@ import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import com.ndrlslz.tiny.rpc.core.utils.ReflectUtils;
 import io.netty.channel.ChannelHandlerContext;
 import io.reactivex.Single;
+import io.reactivex.functions.BiConsumer;
+import io.reactivex.functions.Consumer;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

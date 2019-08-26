@@ -22,7 +22,7 @@ public class TinyRpcRequestDecoder extends MessageToMessageDecoder<ProtocolBody>
 
             out.add(tinyRpcRequest);
         } else if (msg.getType() == ProtocolHeader.HEARTBEAT) {
-            LOGGER.info("receive heart beat message");
+            LOGGER.debug("receive heart beat message");
         }
     }
 }
