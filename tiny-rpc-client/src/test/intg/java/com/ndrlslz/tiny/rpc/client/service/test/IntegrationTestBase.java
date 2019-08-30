@@ -1,11 +1,11 @@
-package com.ndrlslz.tiny.rpc.service.test;
+package com.ndrlslz.tiny.rpc.client.service.test;
 
-import com.ndrlslz.tiny.rpc.core.HelloService;
-import com.ndrlslz.tiny.rpc.core.HelloServiceImpl;
+import com.ndrlslz.tiny.rpc.client.implementation.HelloService;
+import com.ndrlslz.tiny.rpc.client.implementation.HelloServiceImpl;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServerOptions;
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcService;
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcService;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcServiceOptions;
 import org.junit.After;
 import org.junit.Before;
 

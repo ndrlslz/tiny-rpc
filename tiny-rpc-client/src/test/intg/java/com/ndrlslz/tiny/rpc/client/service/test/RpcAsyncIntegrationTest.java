@@ -1,11 +1,10 @@
-package com.ndrlslz.tiny.rpc.service.test;
+package com.ndrlslz.tiny.rpc.client.service.test;
 
-import com.ndrlslz.tiny.rpc.core.*;
+import com.ndrlslz.tiny.rpc.client.implementation.*;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 

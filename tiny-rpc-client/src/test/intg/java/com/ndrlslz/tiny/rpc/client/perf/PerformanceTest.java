@@ -1,15 +1,23 @@
-package com.ndrlslz.tiny.rpc;
+package com.ndrlslz.tiny.rpc.client.perf;
 
 import com.ndrlslz.tiny.rpc.core.HelloService;
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcService;
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
+import com.ndrlslz.tiny.rpc.core.HelloServiceImpl;
+import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcService;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcServiceOptions;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
 
-public class PerfTest {
+public class PerformanceTest {
     public static void main(String[] args) throws InterruptedException {
+        int port = 8888;
+        TinyRpcServer tinyRpcServer = TinyRpcServer
+                .create()
+                .registerService(new HelloServiceImpl())
+                .listen(port);
+
         TinyRpcService tinyRpcService = TinyRpcService.create(new TinyRpcServiceOptions()
                 .withTimeout(10)
                 .withMinConnectionCount(10)
@@ -17,7 +25,7 @@ public class PerfTest {
 
         HelloService service = (HelloService) tinyRpcService
                 .service(HelloService.class)
-                .server("localhost", 8888);
+                .server("localhost", port);
 
         service.hello();
 
@@ -25,16 +33,13 @@ public class PerfTest {
 
         run(service, threadPool);
 
-//        TimeUnit.SECONDS.sleep(20);
-//
-//        run(service, threadPool);
-
         threadPool.shutdown();
         tinyRpcService.close();
+        tinyRpcServer.close();
     }
 
     private static void run(HelloService service, ExecutorService threadPool) throws InterruptedException {
-        int count = 2000000;
+        int count = 100000;
 
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch finish = new CountDownLatch(count);
@@ -42,23 +47,18 @@ public class PerfTest {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        IntStream.range(0, count).forEach(index -> {
-            threadPool.submit(new Callable<String>() {
-                @Override
-                public String call() throws InterruptedException {
-                    start.await();
-                    try {
-                        return (String) service.hello();
-                    } catch (Exception e) {
-                        System.out.println(e.getClass());
-                        e.printStackTrace();
-                    } finally {
-                        finish.countDown();
-                    }
-                    return null;
-                }
-            });
-        });
+        IntStream.range(0, count).forEach(index -> threadPool.submit(() -> {
+            start.await();
+            try {
+                return service.hello();
+            } catch (Exception e) {
+                System.out.println(e.getClass());
+                e.printStackTrace();
+            } finally {
+                finish.countDown();
+            }
+            return null;
+        }));
         start.countDown();
         finish.await();
 

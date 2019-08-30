@@ -1,12 +1,12 @@
 package com.ndrlslz.tiny.rpc.server.test;
 
-import com.ndrlslz.tiny.rpc.core.HelloServiceImpl;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
 import com.ndrlslz.tiny.rpc.core.serialization.HessianSerializer;
 import com.ndrlslz.tiny.rpc.server.client.RpcTestClient;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServer;
 import com.ndrlslz.tiny.rpc.server.core.TinyRpcServerOptions;
+import com.ndrlslz.tiny.rpc.server.implementation.HelloServiceImpl;
 import org.junit.After;
 import org.junit.Before;
 

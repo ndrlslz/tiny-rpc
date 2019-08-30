@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.service.core;
+package com.ndrlslz.tiny.rpc.client.service.core;
 
 public class TinyRpcServiceOptions {
     private static final int DEFAULT_TIMEOUT_SECONDS = 10;

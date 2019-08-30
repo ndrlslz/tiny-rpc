@@ -7,7 +7,7 @@ import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.client.pool.DefaultConnectionPool;
 import com.ndrlslz.tiny.rpc.client.pool.PooledConnection;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcRequest;
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcServiceOptions;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;

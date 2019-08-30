@@ -1,4 +1,4 @@
-package com.ndrlslz.tiny.rpc.service.proxy;
+package com.ndrlslz.tiny.rpc.client.service.proxy;
 
 import com.ndrlslz.tiny.rpc.client.core.TinyRpcClient;
 

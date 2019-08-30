@@ -1,6 +1,6 @@
 package com.ndrlslz.tiny.rpc.client.pool;
 
-import com.ndrlslz.tiny.rpc.service.core.TinyRpcServiceOptions;
+import com.ndrlslz.tiny.rpc.client.service.core.TinyRpcServiceOptions;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;

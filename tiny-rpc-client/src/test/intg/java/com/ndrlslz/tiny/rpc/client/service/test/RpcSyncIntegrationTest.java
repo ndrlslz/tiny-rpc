@@ -1,6 +1,6 @@
-package com.ndrlslz.tiny.rpc.service.test;
+package com.ndrlslz.tiny.rpc.client.service.test;
 
-import com.ndrlslz.tiny.rpc.core.*;
+import com.ndrlslz.tiny.rpc.client.implementation.*;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

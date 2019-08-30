@@ -1,7 +1,7 @@
-package com.ndrlslz.tiny.rpc.service.core;
+package com.ndrlslz.tiny.rpc.client.service.core;
 
 import com.ndrlslz.tiny.rpc.client.core.TinyRpcClient;
-import com.ndrlslz.tiny.rpc.service.proxy.DynamicProxy;
+import com.ndrlslz.tiny.rpc.client.service.proxy.DynamicProxy;
 
 public class TinyRpcService {
     private Class serviceInterface;
