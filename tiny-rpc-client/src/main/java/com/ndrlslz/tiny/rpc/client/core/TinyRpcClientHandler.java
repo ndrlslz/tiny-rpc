@@ -4,7 +4,6 @@ import com.ndrlslz.tiny.rpc.client.callback.MessageCallback;
 import com.ndrlslz.tiny.rpc.client.callback.MessageCallbackStorage;
 import com.ndrlslz.tiny.rpc.client.model.NullObject;
 import com.ndrlslz.tiny.rpc.client.pool.ConnectionPool;
-import com.ndrlslz.tiny.rpc.client.pool.PooledConnection;
 import com.ndrlslz.tiny.rpc.core.exception.TinyRpcException;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcHeartbeat;
 import com.ndrlslz.tiny.rpc.core.protocol.TinyRpcResponse;
@@ -19,6 +18,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static com.ndrlslz.tiny.rpc.client.pool.PooledConnection.pooledConnectionOf;
+import static java.util.Objects.nonNull;
 
 public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcClientHandler.class);
@@ -60,8 +60,10 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
 
         MessageCallback messageCallback = MessageCallbackStorage.get(correlationId);
 
-        messageCallback.done(new TinyRpcException(cause.getMessage(), cause));
-        MessageCallbackStorage.remove(correlationId);
+        if (nonNull(messageCallback)) {
+            messageCallback.done(new TinyRpcException(cause.getMessage(), cause));
+            MessageCallbackStorage.remove(correlationId);
+        }
     }
 
     @Override
@@ -72,7 +74,7 @@ public class TinyRpcClientHandler extends SimpleChannelInboundHandler<TinyRpcRes
                 TinyRpcHeartbeat tinyRpcHeartbeat = new TinyRpcHeartbeat();
                 tinyRpcHeartbeat.setCorrelationId(UUID.randomUUID().toString());
 
-                LOGGER.info("send heartbeat message");
+                LOGGER.debug("send heartbeat message");
                 ctx.writeAndFlush(tinyRpcHeartbeat);
             }
         } else {

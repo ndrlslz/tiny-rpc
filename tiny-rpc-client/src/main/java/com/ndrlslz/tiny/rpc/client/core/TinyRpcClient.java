@@ -53,7 +53,6 @@ public class TinyRpcClient {
     }
 
     public Object invoke(String method, Object[] parameters) throws InterruptedException {
-//        connectionPool.printConnections();
         TinyRpcRequest tinyRpcRequest = buildTinyRpcRequest(method, parameters);
 
         MessageCallback messageCallback = new MessageCallback();

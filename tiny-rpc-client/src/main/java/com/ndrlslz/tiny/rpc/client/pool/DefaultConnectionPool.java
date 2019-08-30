@@ -44,15 +44,6 @@ public class DefaultConnectionPool implements ConnectionPool {
         lockOfCreateConnection = new ReentrantLock();
     }
 
-    public void printConnections() {
-        int usedSize = usedConnections.size();
-        int availableSize = availableConnections.size();
-        int total = currentConnectionCount.get();
-
-        assert total == availableSize + usedSize;
-        System.out.println("total: " + total + " available size: " + availableSize + " usedSize: " + usedSize);
-    }
-
     @Override
     public void InitConnections() {
         IntStream.range(0, minCount).forEach(value -> {
@@ -109,7 +100,6 @@ public class DefaultConnectionPool implements ConnectionPool {
 
     @Override
     public void removeConnection(PooledConnection connection) {
-        System.out.println("remove connection");
         availableConnections.remove(connection);
         usedConnections.remove(connection);
         currentConnectionCount.decrementAndGet();
@@ -160,7 +150,7 @@ public class DefaultConnectionPool implements ConnectionPool {
     }
 
     private PooledConnection getActiveConnection() throws InterruptedException {
-        PooledConnection connection = availableConnections.poll(10, TimeUnit.SECONDS);
+        PooledConnection connection = availableConnections.poll(tinyRpcServiceOptions.getTimeout(), TimeUnit.SECONDS);
         if (isNull(connection)) {
             throw new TinyRpcNoAvailableConnectionException("No available connection can be used, and cannot create new connection as well");
         }
