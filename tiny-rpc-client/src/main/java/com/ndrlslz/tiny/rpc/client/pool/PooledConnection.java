@@ -6,7 +6,7 @@ import io.netty.channel.Channel;
 import java.util.Objects;
 
 
-public class PooledConnection {
+public final class PooledConnection {
     private Channel channel;
 
     private PooledConnection(Channel channel) {
@@ -31,8 +31,13 @@ public class PooledConnection {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         PooledConnection that = (PooledConnection) o;
         return Objects.equals(channel, that.channel);
     }

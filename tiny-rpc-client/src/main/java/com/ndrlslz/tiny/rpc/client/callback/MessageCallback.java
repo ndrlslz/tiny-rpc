@@ -7,17 +7,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class MessageCallback {
     private Object result;
     private ReentrantLock lock;
-    private Condition MessageCallbackCondition;
+    private Condition messageCallbackCondition;
 
     public MessageCallback() {
         lock = new ReentrantLock();
-        MessageCallbackCondition = lock.newCondition();
+        messageCallbackCondition = lock.newCondition();
     }
 
     public Object get(Integer timeout) throws InterruptedException {
         try {
             lock.lock();
-            MessageCallbackCondition.await(timeout, TimeUnit.SECONDS);
+            messageCallbackCondition.await(timeout, TimeUnit.SECONDS);
 
             return result;
         } finally {
@@ -28,7 +28,7 @@ public class MessageCallback {
     public void done(Object object) {
         try {
             lock.lock();
-            MessageCallbackCondition.signalAll();
+            messageCallbackCondition.signalAll();
             this.result = object;
         } finally {
             lock.unlock();

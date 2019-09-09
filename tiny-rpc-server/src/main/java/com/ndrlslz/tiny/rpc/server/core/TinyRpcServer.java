@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import static java.util.Objects.nonNull;
 
-public class TinyRpcServer {
+public final class TinyRpcServer {
     private static final Logger LOGGER = LoggerFactory.getLogger(TinyRpcServer.class);
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;

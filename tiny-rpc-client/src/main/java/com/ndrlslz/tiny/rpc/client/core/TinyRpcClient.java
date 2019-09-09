@@ -81,8 +81,8 @@ public class TinyRpcClient {
         TinyRpcRequest tinyRpcRequest = new TinyRpcRequest();
         tinyRpcRequest.setMethodName(method);
         tinyRpcRequest.setArgumentsValue(parameters);
-        //TODO maybe snow id?
         tinyRpcRequest.setCorrelationId(UUID.randomUUID().toString());
+
         return tinyRpcRequest;
     }
 

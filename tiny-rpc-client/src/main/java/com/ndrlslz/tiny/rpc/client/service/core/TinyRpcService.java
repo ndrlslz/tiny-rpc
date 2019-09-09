@@ -3,7 +3,7 @@ package com.ndrlslz.tiny.rpc.client.service.core;
 import com.ndrlslz.tiny.rpc.client.core.TinyRpcClient;
 import com.ndrlslz.tiny.rpc.client.service.proxy.DynamicProxy;
 
-public class TinyRpcService {
+public final class TinyRpcService {
     private Class serviceInterface;
     private TinyRpcClient tinyRpcClient;
     private TinyRpcServiceOptions tinyRpcServiceOptions;

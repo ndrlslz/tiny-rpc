@@ -9,7 +9,10 @@ import io.netty.handler.codec.ReplayingDecoder;
 
 import java.util.List;
 
-import static com.ndrlslz.tiny.rpc.core.codec.State.*;
+import static com.ndrlslz.tiny.rpc.core.codec.State.BODY;
+import static com.ndrlslz.tiny.rpc.core.codec.State.BODY_LENGTH;
+import static com.ndrlslz.tiny.rpc.core.codec.State.MAGIC;
+import static com.ndrlslz.tiny.rpc.core.codec.State.TYPE;
 import static com.ndrlslz.tiny.rpc.core.protocol.ProtocolHeader.MAGIC_NUMBER;
 
 public class ProtocolDecoder extends ReplayingDecoder<State> {
