@@ -5,6 +5,8 @@ dependencies {
     compile('ch.qos.logback:logback-classic:1.2.3')
     compile('com.caucho:hessian:4.0.60')
     compile('org.apache.commons:commons-lang3:3.9')
+    compileOnly 'org.projectlombok:lombok:1.18.4'
+    annotationProcessor 'org.projectlombok:lombok:1.18.4'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:2.21.0'
@@ -16,7 +18,7 @@ repositories {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '4.0'
+    gradleVersion = '4.6'
 }
 
 configurations {
