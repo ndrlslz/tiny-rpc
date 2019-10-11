@@ -8,8 +8,8 @@ Firstly define the interaction interface between client and server.
 ```
 public interface HelloWorldService {  
     String hello();  
-  
-	Future<String> helloAsync();  
+
+    Future<String> helloAsync();  
 }
 ```
 
@@ -32,7 +32,7 @@ public class HelloWorldServiceImpl implements HelloWorldService {
 Then you are able to start RPC server like below.
 ```
 TinyRpcServer
-		.create()  
+        .create()  
         .registerService(new HelloWorldServiceImpl())  
         .listen(6666);
 ```
@@ -40,7 +40,7 @@ TinyRpcServer
 ### Client
 Running below code to start RPC client, then you can invoke server's method just like invoking locally
 ```
-HelloWorldService helloWorldService = (HelloWorldService) TinyRpcService  
+HelloWorldService helloWorgldService = (HelloWorldService) TinyRpcService  
         .create()  
         .service(HelloWorldService.class)  
         .server("localhost", 6666);  
